@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+<head>
+	<title>Bindster Form Example</title>
+	<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+	<script type="text/javascript" src="../../js/bindster.js"></script>
+	<script type="text/javascript">
+		function Controller() {};
+		Controller.prototype = {
+
+			// Actions
+			submit: function () {
+				this.validate();
+				if (this.model.password != this.model.validatePassword)
+					this.setError(this.model, "validatePassword", {message: "nomatch"});
+				if (!this.hasErrors())
+					alert("Form OK");
+			},
+
+			// validators
+			isName: function () {this.doesMatch("[^0-9A-Za-z \']", "name")},
+			isEmail: function () {this.doesMatch("^[^\@ ]+\@[^\@ \.]+\.[^\@ ]+", "email")},
+			isNumeric: function () {this.doesMatch("[^0-9]", "numeric")},
+			isNumeric: function () {this.doesMatch("[^0-9A-Za-z]", "alphanumeric")},
+			isPhone: function () {this.doesMatch("[^0-9 \(\)-]", "phone")},
+			notEmpty: function() {
+				if (!this.value || this.value.length == 0) {
+					throw {message: "required"};
+				}
+			},
+			isMinLength: function(len) {
+				if (this.isEmpty() || this.value.length < len) 
+					throw {message: "minlength", minlength: len}
+			},
+			isMaxlength: function(len) {
+				if (this.isEmpty || this.value.length > len) 
+					throw {message: "maxlength", maxlength: len}
+			},
+			isEmpty: function(value) {
+				return this.value == null || this.value.length == 0
+			},
+			
+			// parsers
+			parseCurrency: function() {
+				if (!this.value) return this.value;
+				var n = this.value;
+				n = n.replace(/[^0-9\.\-]/g, "");
+				var f = parseFloat(n);
+				if (isNaN(f))
+					throw {message: "currency"};
+				var result = Math.floor(f * 100 + .5) / 100;
+				return result;
+			},
+			parseDate: function() {
+				if (this.value == null || this.value.length == "") return null;
+				var parsed = Date.parse(this.value);
+				if (isNaN(parsed)) {
+					throw {message: "date"}
+				}
+				return new Date(parsed);
+			},
+			
+			// Formatters	
+			formatDate: function()	{
+				if (!this.value) return this.value;
+				var date = this.value;
+				return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+			},
+
+			// Format, Parse, Validate common functiosn
+			formatCurrency: function(prependSymbol) {
+				if(!this.value) return "";
+				prependSymbol = (prependSymbol ? prependSymbol : "$") + " ";
+				var n = (Math.round(this.value * 100) / 100) + "";
+				n = n.replace(/\.([0-9])$/, ".$10");
+				return prependSymbol + this.addCommas(n);
+			},
+			addCommas: function (nStr)	{
+				nStr += '';
+				x = nStr.split('.');
+				x1 = x[0];
+				x2 = x.length > 1 ? '.' + x[1] : '';
+				var rgx = /(\d+)(\d{3})/;
+				while (rgx.test(x1)) {
+					x1 = x1.replace(rgx, '$1' + ',' + '$2');
+				}
+				return x1 + x2;
+			},
+			doesMatch: function(regex, error) {
+				if (this.value != null && this.value.length > 0 && !(this.value + "").match(regex))
+					throw error ? {message: error} : " Incorrect Format";
+			}
+
+		}
+		var model = {
+			email: "",
+			password: "",
+			validatePassword: "",
+			firstName: "",
+			middleName: "",
+			lastName: "",
+			born: null,
+			contribution: null
+		}
+
+
+	</script>
+</head>
+<style>
+	.fieldLabel {float: left; width: 160px; text-align: right;padding: 6px;height: 20px; }
+	.fieldInput {float: left; width: 200px; height: 20px}
+	.field {clear: both; padding: 6px}
+	.clear {clear: both; height: 0px; display: block; overflow: hidden}
+	.fieldError {float: left; color: red; margin-left: 16px;padding:3px}
+</style>
+<body>
+	
+	<b:mapper tag="formfield">
+		<div class="field">
+			<label class="fieldLabel" for="{'__bind__'.replace(/\./, '__')}" b:bind="'__label__' + ':'" b:showif="'__label__'"></label>
+			<div class="fieldInput">
+				<b:if test="'__type__' == 'text'">
+					<input b:name="__bind__" type="text" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__" b:size="__size__" b:maxlength="__maxlength__" b:focus="1"/>
+				</b:if>
+				<b:if test="'__type__' == 'password'">
+					<input b:name="__bind__"type="password" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__"  b:size="__size__" b:maxlength="__maxlength__"   b:focus="1"/>
+				</b:if>
+				<b:if test="'__type__' == 'select'">
+					<select b:name="__bind__"type="password" b:bind="__bind__" b:validate="__validate__" b:fill="__fill__" b:using="__using__"></select>
+				</b:if>
+				<b:if test="'__type__' == 'radio'">
+					<input b:name="__bind__" type="radio" b:truevalue="__truevalue__"type="text" b:bind="__bind__" b:validate="__validate__" />
+					<span b:bind="'__text__'"></span>
+				</b:if>		    
+				<b:if test="'__type__' == 'checkbox'">
+					<input b:name="__bind__" type="checkbox" b:truevalue="__truevalue__" b:falsevalue="__falsevalue__"type="text" b:bind="__bind__" b:validate="__validate__"/>
+					<span b:bind="'__text__'"></span>
+				</b:if>
+			</div>
+				<div class="error fieldError" b:showif="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+		</div>
+	</b:mapper>
+
+	<b:formfield type="text" bind="email" label="EMail Address" validate="isEmail();notEmpty();" size="100"></b:formfield>
+	<b:formfield type="password" bind="password" label="Password" size="16" validate="notEmpty()"></b:formfield>
+	<b:formfield type="password" bind="validatePassword" label="Confirm Password" size="16" validate="notEmpty()"></b:formfield>
+	<b:formfield type="text" bind="firstName" label="First Name" validate="notEmpty();" size="100"></b:formfield>
+	<b:formfield type="text" bind="middleName" label="Middle Name" size="100"></b:formfield>
+	<b:formfield type="text" bind="lastName" label="Last Name" validate="notEmpty();" size="100"></b:formfield>
+	<b:formfield type="text" bind="born" label="Date of Birth" parse="parseDate()" format="formatDate()"  validate="notEmpty()"size="20"></b:formfield>
+	<b:formfield type="text" bind="contribution" label="Contribution" parse="parseCurrency()" format="formatCurrency()" size="20" validate="notEmpty()"></b:formfield>
+
+	<div class="clear"></div>
+	<a href="#" b:onclick="submit()">Submit</a>
+
+
+	<b:message name="nomatch" value="Passwords must match" ></b:message>
+	<b:message name="email" value="{field} must be a valid email address" ></b:message>
+	<b:message name="date" value="{field} must be a valid date in the form mm-dd-yyyy" ></b:message>
+	<b:message name="number" value="{field} must be numeric" ></b:message>
+	<b:message name="currency" value="{field} must be in dollars" ></b:message>
+	<b:message name="required" value="Please enter {field}" ></b:message>
+	<b:message name="minlength" value="{anOrA(field)} must be at least {minlength} characters" ></b:message>
+	<b:message name="maxlength" value="{anOrA(field)} must be less than {maxlength} characters" ></b:message>
+
+	<script type="text/javascript">
+		var bindster = new Bindster(model, null, new Controller());
+	</script>
+
+</body>
+</html>

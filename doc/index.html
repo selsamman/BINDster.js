@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:b="http://bindster.com/bindster.dtd">
+<head>
+	<meta http-equiv="Content-type" content="text/html;charset=ISO-8859-1">
+	<title>BINDster Documentation</title>
+	<meta name="Author" content="Sam Elsamman" />
+	<meta name="Keywords" content="BINDster model view controller data binding javascript html" />
+	<meta name="Description" content="BINDster takes a fresh approach to templating. Data binding links changes of Javascript variable values to HTML elements and vica-versa in real-time.  By using iteration and conditional constructs that modify the DOM on-the-fly there is no need to parse a template or compile. Manipulating the DOM in-place also means that objects are not destroyed to paint new changes on the screen." />
+	<script src="../js/bindster.js"></script>
+	<script src="../js/formatJS.js"></script>
+	<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+	
+	<script>
+	var model = {
+		page: 'home',
+		hover: '',
+		top_menu: ["home", "tutorial", "reference", "faq", "about"],
+		top_menu_ix: 0,
+		tutorial_menu: ["Hello World", "Iteration", "Events", "Sequencing", "An Application"],
+		tutorial_menu_ix: 0,
+		reference_menu: ["Binding", "Iteration", "Events", "Conditionals", "Attributes", "Advanced Binding", "Error Handling",  "Wrappers",  "Mappers", "Back"],
+		reference_menu_ix: 0,
+		show: {}
+	}
+	function Controller () {}
+	Controller.prototype = {
+		arrive: function(l1, l2) {
+			this.m.top_menu_ix = l1 - 1;
+			if (l1 == 2)
+				this.m.tutorial_menu_ix = l2 - 1;
+			if (l1 == 3)
+				this.m.reference_menu_ix = l2 - 1;
+			}
+	}
+	</script>
+ </head>
+
+<body>
+
+<b:mapper tag="topmenu">
+	<a b:href="#page___href__"  b:class="{(page == '__href__' || page.replace(/_.*/,'') == '__href__'.replace(/_.*/,'') || hover == '__href__') ? 'highlight' : ''}" b:onmouseover="hover = '__href__'" b:onmouseout="hover = ''">
+		<div class="inner" b:bind="'__text__'"></div>
+		<span b:bind="'__text__'"></span>
+	</a>
+</b:mapper>
+<b:mapper tag="menu">
+	<a b:href="#page___href__"  b:class="{(page == '__href__' || hover == '__href__') ? 'highlight' : ''}" b:onmouseover="hover = '__href__'" b:onmouseout="hover = ''">
+		<div class="inner" b:bind="'__text__'"></div>
+		<span b:bind="'__text__'"></span>
+	</a>
+</b:mapper>
+<div class="header">
+	<div class="top">
+		<img src="images/bindster.png" alt="BINDster">
+	</div>
+	<div class="bottom">
+		<div class="menu">
+				<b:topmenu href="home" text="Home"></b:topmenu>
+				<b:topmenu href="tutorial_hello_world" text="Tutorial"></b:topmenu>
+				<b:topmenu href="reference_binding" text="Reference"></b:topmenu>
+				<b:topmenu href="about" text="About"></b:topmenu>
+		</div>
+		<div class="clear">&nbsp;</div>
+	</div>
+</div>
+<div class="body">
+	<!-- - - - - - - - - - - - - - - - - - -  HOME  - - - - - - - - - - - - - - - - - - - - - - -->
+	<a id="page_home" b:onarrival="page ='home'" ></a>
+	<div b:showif="page == 'home'" class="single ss_editable">
+		<h1>Bidrectional binding of data to the DOM</h1>
+		<ul style="display: block;float: right;margin-left:50px;margin-right:50px;margin-top: -40px">
+			<li>Binds to POJOs without observables</li>
+			<li>Design pattern agnostic</li>
+			<li>Compact, fast and efficient</li>
+			<li>Compatible back to IE6</li>
+			<li>Very easy to learn and use</li>
+			<li>Open Source MIT LIcense</li>
+			<li>No risk of injection</li>
+		</ul>
+		<p>BINDster is an alternative to using HTML templates to create dynamic web applications. BINDster creates a real-time bi-directional link between the DOM and your Javascript object. By using iteration and conditional constructs all of the flexibility of templating is preserved.  Because the linkage is bi-directional there is no nead for events to capture changes to form elements.</p>
+		<img src="images/mvc.gif" style="float: right;margin-top: 28px;margin-bottom: 20px" alt="Model View controller">
+		<p>The best way to think of BINDster is in the context of a model, view, controller. BINDster is the glue that "binds" the model to the view.</p>
+		<p>As the user enters data into form elements in the view, the model is automatically updated.  Your controller responds to events like a user clicking on a action.  After processing these events BINDster compares the model to the DOM and any changes are reflected in the DOM.</p>
+		<p>The key features include:</p>
+		<ul>
+			<li>Binding data to form elements such as selections, radio buttons check boxes and input fields</li>
+			<li>Conditional tests that insert or remove DOM elements based on the value in the model</li>
+			<li>Iteration which clones a DOM elements for every element of an an array</li>
+			<li>Flexible filtering and error handling insure that bad data never makes it's way into the model</li>
+		</ul>
+		<p>Binding, conditional constructs and iteration are declared directly in the HTML using BINDster-specific attributes in a custom name space so the binding is always clear.  If you prefer not to adorn your HTML with BINDster-specific attributes all functions may be applied in Javascript using selectors.</p>
+	</div>
+
+	<!-- - - - - - - - - - - - - - - - - - -  Turtorial   - - - - - - - - - - - - - - - - - - - - - - -->
+
+	<div class="left" b:showif="page.match(/^tutorial/)">
+		<div class="menu">
+			<b:menu href="tutorial_hello_world" text="Hello World"></b:menu>
+			<b:menu href="tutorial_iteration" text="Iteration"></b:menu>
+			<b:menu href="tutorial_events" text="Events"></b:menu>
+			<b:menu href="tutorial_conditionals" text="Conditionals"></b:menu>
+			<b:menu href="tutorial_goodies" text="Goodies"></b:menu>
+			<div class="clear">&nbsp;</div>
+		</div>
+	</div>
+
+	<!-- - - - - - - - - - - - - - - - -  Turtorial - Hello World   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_tutorial_hello_world" b:onarrival="page = 'tutorial_hello_world'"></a>
+	<div b:showif="page == 'tutorial_hello_world'" class="right">
+		<h1>Hello World</h1>
+
+<textarea id="hello_world" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:bs="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Hello World</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script src="js/bindster.js"></script>
+		<script>
+			var model = {
+				world: "Hello"
+			}
+		</script>
+	</head>
+	<body>
+		<input b:bind="world" b:when="immediate" /><br />
+		<span  b:bind="world" />
+		<script>
+			var bindster = new Bindster(model);
+		</script>
+	</body>
+</html>
+</textarea>
+
+		<p>
+			What would the world be like without a "Hello". For BINDster's Hello World add this to your header to include bindster:
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("hello_world", 7, 7);</script>
+		</div>
+		<p>
+			Create your model. The model can either be a prototyped object or a JSON object. Here we show a simple JSON  object that has a single property called world:
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("hello_world", 8, 12);</script>
+		</div>
+		<p>
+			Create your view.  This view has two elements each of which is bound the world property in the model. The immediate prameter forces the model to be updated 
+			immediatly (e.g. as you type) vs. when the input loses focus:
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("hello_world", 15, 16);</script>
+		</div>
+		<p>
+			Bind the model to the view by creating a new instance of Bindster and passing it a new instance of your model.  This goes just before &lt;/BODY&gt;
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("hello_world", 17, 19);</script>
+		</div>
+		<p>And here it is.  Enter text in the control to see how it works</p>
+		<iframe class="example" src="samples/tutorial_hello_world.html"></iframe>
+		<p>
+			<a href="#" b:onclick="show['hw5']=true;" b:showif="!show['hw5']">Full Source</a>
+			<a href="#" b:onclick="show['hw5']=false;" b:showif="show['hw5']">Hide Source</a>
+		</p>
+		<div class="code" b:showif="show['hw5']">
+			<script>formatJSFromTextArea("hello_world", 1, 1000);</script>
+		</div>
+
+	</div>
+	
+	<!-- - - - - - - - - - - - - - - -  Turtorial - Iteration   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_tutorial_iteration" b:onarrival="page ='tutorial_iteration'"></a>
+	<div b:showif="page == 'tutorial_iteration'" class="right">
+		<h1>Iteration</h1>
+
+<textarea id="simple_iteration" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script src="../../js/bindster.js"></script>
+		<script>
+			var model = {
+				addresses: [
+					{name: "Barack Obama", email:"prez@whitehouse.gov"},
+					{name: "George Bush", email:"gb@alumni.whitehouse.gov"}
+				]
+			}
+		</script>
+	</head>
+	<body>
+		<table>
+			<tbody>
+				<b:iterate on="addresses" index="ax">
+					<tr>
+						<td><input b:bind="addresses[ax].name" /></td>
+						<td><input b:bind="addresses[ax].email" /></td>
+					</tr>
+				</b:iterate>
+			</tbody>
+		</table>
+		<script>
+			var bindster = new Bindster(model);
+		</script>
+	</body>
+</html>
+</textarea>
+
+		<p>Binding individual variables is usefull but binding repeating data is a lot more interesting. Let's say we want a simple address book with a name and email address.  Here is the model:</p>
+		<div class="code">
+			<script>formatJSFromTextArea("simple_iteration", 8, 15);</script>
+		</div>
+		<p>The <strong>iterate</strong> tag will clone all of it's child nodes for each element in the array specified by the <strong>on</strong> attribute.  The <strong>index</strong> attribute causes it to set a property to the ordinal position of the array element being iterated.  This let's you bind to the specific array element. In this case the array is <strong>addresses</strong>, the index property <strong>ax</strong></P>
+		<div class="code">
+			<script>formatJSFromTextArea("simple_iteration", 18, 27);</script>
+		</div>
+		<p>And the results look like this</P>
+		<iframe class="example" src="samples/tutorial_simple_iteration.html" style="width: 440px;height: 128px"></iframe>
+	</div>
+
+<!-- - - - - - - - - - - - - - - -  Turtorial - Events   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_tutorial_events" b:onarrival="page ='tutorial_events'"></a>
+	<div b:showif="page == 'tutorial_events'" class="right">
+		<h1>Events</h1>
+
+<textarea id="simple_iteration_events" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script src="../../js/bindster.js"></script>
+		<script>
+			var model = {
+				addresses: [
+					{name: "Barack Obama", email:"prez@whitehouse.gov"},
+					{name: "George Bush", email:"gb@alumni.whitehouse.gov"}
+				]
+			}
+			function Controller() {};
+			Controller.prototype = {
+				addAddress: function (new_name, new_email) {
+					this.model.addresses.push({name: new_name, email: new_email});
+				},
+				removeAddress: function (ax) {
+					this.model.addresses.splice(ax,1);
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="view">
+			<table>
+				<tbody>
+					<b:iterate on="addresses" index="ax">
+						<tr>
+							<td><input b:bind="addresses[ax].name" /></td>
+							<td><input b:bind="addresses[ax].email" /></td>
+							<td><a b:onclick="{controller.removeAddress(ax)}" href="">Remove</a></td>
+						</tr>
+					</b:iterate>
+				</tbody>
+			</table>
+			<p><a b:onclick="{controller.addAddress('', '')}" href="">Add New Address</a></p>
+		</div>
+		<script>
+			var bindster = new Bindster(model, null, new Controller());
+		</script>
+	</body>
+</html>
+</textarea>
+
+		<p>To do anything useful we need events.  With BINDster you need events only for real-world actions that that user can take such as clicking on a button.  We will extend the iteration example to to allow the array of addresses to be added and deleted.
+		</p>
+		<p>To do this we need a controller that will handle the add and delete actions</P>
+		<div class="code">
+			<script>formatJSFromTextArea("simple_iteration_events", 15, 23);</script>
+		</div>
+		<p>The Controller class is where you put functions that can be referred to in event handlers.  When referencing data in the model you must refer to the model properties as  <strong>this.model.<i>propname</i></strong> or <strong>this.m.<i>propname</i></strong><p>
+		<p>The methods are called using attributes in the b namespace that correspond to the standard on events.  It is important to use the b namespace for these attributes so that BINDster can be sure to set the value of any variables that are set by iteration.  In this example ax.</p>
+		<div class="code">
+			<script>formatJSFromTextArea("simple_iteration_events", 28, 39);</script>
+		</div>
+		<p>You must also tell BINDster about your controller:</p>
+		<div class="code">
+			<script>formatJSFromTextArea("simple_iteration_events", 41, 43);</script>
+		</div>
+		<p>And the results look like this</P>
+		<iframe class="example" src="samples/tutorial_simple_iteration_events.html" style="width: 540px;height: 200px"></iframe>
+	</div>
+
+<!-- - - - - - - - - - - - - - - -  Turtorial - Conditionals   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_tutorial_conditionals" b:onarrival="page ='tutorial_conditionals'"></a>
+	<div b:showif="page == 'tutorial_conditionals'" class="right">
+		<h1>Conditionals Expressions</h1>
+
+<textarea id="master_detail" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="http://bindster.com/examples/css/site.css" media="all" />
+		<script src="../../js/bindster.js"></script>
+		<script>
+			var model = {
+				addresses: [
+					{name: "Barack Obama", email:"prez@whitehouse.gov",
+					 street: "1600 Pennsylvania Ave", city: "Washington",
+					 state: "DC", zip: "20500",	 phone: "(555) 555-5555"},
+					{name: "George Bush", email:"gb@alumni.whitehouse.gov",
+					 street: "Praire Chapel Ranch", city: "Crawford",
+					 state: "TX", zip: "76638", phone: "(555) 555-5555"},
+				],
+				popup: false,
+				current_ax: 0
+			}
+			function Controller() {
+			};
+			Controller.prototype = {
+				newAddress: function (ax) {
+					this.model.addresses.push({name: "", email:"", street: "", city: "",
+						state: "", zip: "", phone_type: "", phone: "", ext: ""});
+					this.m.current_ax = this.m.addresses.length - 1;
+					this.m.popup = true;
+				},
+				removeAddress: function (ax) {
+					this.model.addresses.splice(ax,1);
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="view" style="position: relative">
+			<table>
+				<tbody>
+					<b:iterate on="addresses" index="ax">
+						<tr	b:class="{(current_ax == ax ? 'active' : '')}" b:onclick="{current_ax = ax}">
+							<td>
+								<span b:bind="addresses[ax].name"></span><br />
+								<span b:bind="addresses[ax].phone"></span>
+							</td>
+							<td>
+								<span b:bind="addresses[ax].email" /></span><br />
+								<span b:bind="addresses[ax].street"></span><br />
+								<span b:bind="addresses[ax].city"></span>
+								<span b:bind="addresses[ax].state"></span>
+								<span b:bind="addresses[ax].zip"></span>
+							</td>
+							<td><a b:onclick="{current_ax = ax;popup=true}" href="">Edit</a></td>
+							<td><a b:onclick="{c.removeAddress(ax)}" href="">Remove</a></td>
+						</tr>
+					</b:iterate>
+				</tbody>
+			</table>
+			<p><a b:onclick="{c.newAddress()}" href="">Add New Address</a></p>
+			<b:if test="popup">
+				<div class="popup" style="position: absolute; top: 16px; left: 16px">
+					First: &nbsp;&nbsp; <input b:focus="1" b:bind="addresses[current_ax].name" />
+					Last: <input b:bind="addresses[current_ax].email" /><br />
+					Street: <input b:bind="addresses[current_ax].street" /><br>
+					City: &nbsp;&nbsp;&nbsp; <input b:bind="addresses[current_ax].city" /> 
+					State: <input class="state" b:bind="addresses[current_ax].state" />
+					Zip: <input class="zip" b:bind="addresses[current_ax].zip" /><br />
+					<p><a b:onclick="{popup=false}" href="">Done</a></p>
+				<div>
+			</b:if>
+		</div>			
+		<script>
+			var bindster = new Bindster(model, "view", new Controller());
+		</script>
+	</body>
+</html>
+</textarea>
+
+		<p>BINDSter uses conditional constructs similar to those found in templating systems to control what is displayed.  The conditions are usually based on testing properties in the model that serve as states for the applications.
+		</p>
+		<p>We will extend the previous sample application to include a popup-up that allows the address to be edited.  This popup is only displayed when the popup property is true. The popup binds directly to the addresses array using a current index (current_ax).</p>
+		<div class="code">
+			<script>formatJSFromTextArea("master_detail", 60, 70);</script>
+		</div>
+		<p>Our main iteration of the addresses has a couple of new elements</p>
+		<div class="code">
+			<script>formatJSFromTextArea("master_detail", 38, 58);</script>
+		</div>
+		<p>On line 53 you see a link that sets popup to true and also sets the current index to the index used for the iteration.  BINDSter ensures that when events fire that the value of the index being iterated is set to the value of the particular row being iterated making this sort of pattern possible.</p>
+		<p>One other type of conditional expression is found on line 41.  Any HTML attribute can be prefixed with a b: and then a javascript expression may be used to get a value.  Here we are setting the class to 'active' when the current index is equal to the index being iterated.</p>
+		<p>Any variables being referred to in the BINDSter tags must be defined in the model.  popup and current_ax have been added:</P>
+		<div class="code">
+			<script>formatJSFromTextArea("master_detail", 9, 20);</script>
+		</div>
+		<p>Here is what the application looks like:</p>
+		<iframe class="example" src="samples/tutorial_master_detail.html" style="width: 540px;height: 300px"></iframe>
+	</div>
+
+<!-- - - - - - - - - - - - - - - -  Tutorial - Goodies   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_tutorial_goodies" b:onarrival="page ='tutorial_goodies'"></a>
+	<div b:showif="page == 'tutorial_goodies'" class="right">
+		<h1>Other Goodies in BINDster</h1>
+		<h2>Custom Tags</h2>
+		<p>BINDSter lets you create your own <a href="#reference_mappers">custom tags</a> that effectively extend HTML.  You can define your own attributes and map them to an HTML template that will be substituted for the element using the custome tags.  This is equivalent to having HTML macros.
+		<h2>Wrapping HTML</h2>
+		<p>You can define an <a href="#reference_wrappers">HTML template that will be used to wrap elements</a> defined using a selector expression.  For example you could define a "wrapper" that took all anchor elements and wrapped them in a structure that would create rounded corners</p>
+		<h2>Bookmarks and Back Button</h2>
+		<p>Single page applications need to support the back button and also to be able to define their state using unique URLs.  BINDster uses <a href="#reference_wrappers">hashmarks</a> to accomplish this.  Just define named anchors define what state properties are to be set when that anchor is linked to.  Then if all internal links in the application use the hash marks the back button will work properly.  This document is an example of navigating with hash marks.
+		<h2>Bind to Selects</h2>
+		<p>Asside from simple bindings to input fields, BINDSter can map to select inputs (dropdowns), automatically filling them with name/value pairs.  It can also map to sets of radio buttons and check boxes.
+		<h2>Binding to Complex Controls</h2>
+		<p>A controler plug-in structure allows binding to complex UI controls such as sliders</p>
+		<h2>Formatting and Parsing</h2>
+		<p>Binding would not be very useful if there was no formatting or parsing.  <a href="#reference_filters">Formatters and parsers</a> can be used to translate data as it is marshalled back and forth between form fields and the model.<p>
+		<h2>Error Handling</h2>
+		<p>You can ensure that your model never gets bad data through <a href="#reference_filters">parsing</a>.  BINDster is smart enough to keep a shadow copy of "bad" values so the user will always see the bad data until it is corrected but it is never marshalled into the model.
+		<h2>No Injection Risks</h2>
+		<p>Most templating systems use innerHTML which means that malicious data input by users could potentially end up in HTML and causing script to be executed.  BINDSter does not use innerHTML and only sets the value of DOM elements.</p>
+	</div>
+
+<!-- - - - - - - - - - - - - - - - -  About   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_about" b:onarrival="page = 'about'"></a>
+	<div b:showif="page == 'about'" class="single">
+	<h1>About BINDster</h1>
+	<p>Hosted on <a href="https://github.com/selsamman/BINDster.js">github</a> under the MIT license.</p>
+	</div>
+<!-- - - - - - - - - - - - - - - - -  Reference - Menu   - - - - - - - - - - - - - - - - - - -->
+
+	<div class="left" b:showif="page.match(/^reference/)">
+		<div class="menu">
+			<b:menu href="reference_namespace" text="Namespace vs data-xxx"></b:menu>
+			<b:menu href="reference_binding" text="Binding"></b:menu>
+			<b:menu href="reference_iteration" text="Iteration"></b:menu>
+			<b:menu href="reference_conditional" text="Conditionals"></b:menu>
+			<b:menu href="reference_expressions" text="Expressions"></b:menu>
+			<b:menu href="reference_filters" text="Marshalling"></b:menu>
+			<b:menu href="reference_mappers" text="Mappers"></b:menu>
+			<b:menu href="reference_wrappers" text="Wrappers"></b:menu>
+			<b:menu href="reference_anchors" text="Bookmarks"></b:menu>
+			<b:menu href="reference_forms" text="Forms"></b:menu>
+			<!--b:menu href="reference_focus" text="Focus"></b:menu -->
+			<!--b:menu href="reference_events" text="Events"></b:menu -->
+			<!--b:menu href="reference_controllers" text="Controllers"></b:menu -->
+			<div class="clear">&nbsp;</div>
+		</div>
+	</div>
+<!-- - - - - - - - - - - - - - - - -  Reference - Binding   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_namespace" b:onarrival="page= 'reference_namespace'" ></a>
+	<div b:showif="page == 'reference_namespace'" class="right">
+		<h1>Namespaces and data-xxx</h1>
+		<p>BINDster's preferred method of declaring binding is to use namespaces for BINDSter specific tags and attributes.  HTML 5 does not specifically support namespaces but tollerates them mainly for the benefit of popular namespaces such as SVG and MathML. All modern browsers tollerate them for this reason and also because Facebook uses it's own name space for XFBML.  However, other binding frameworks have chosen to use the data-xxx attributes of HTML and this method is fully supported by BINDSter as well.  To use the data-xxx style do the following:</p>
+		<ul>
+			<li>Use <strong>data-</strong> in place of <strong>b:</strong> on all bindster related attributes</li>
+			<li>Replace BINDSter-specific tags with <strong>&lt;div data-xxx-yyy="attribute value" ...&gt; . . . &lt;/div&gt;</strong> where xxx is the tag name and yyy is the attribute name</li>
+		</ul>
+		<p>We feel that that the use of namespaces makes the HTML very clear and given the fact that this works with all modern browsers we feel it is worthwhile.  However one should still be aware of several issues with using the namespace approach</p>
+		<ul>
+			<li>Your HTML will not validate as is.  If you absolutely must have HTML that can be validated by a 3rd party then you should not use this method.  If you view validation as something that will help you catch errors we provide a handy service that translates your HTML to the data-xxxx style which can and will validate - <a href="http://bindster.com/cgi-bin/tohmtl5"> http://bindster.com/cgi-bin/tohmtl5 </a>.  This can be used to prefix your URLs to check to quickly see whether they would validate when translated to the data-xxxx style.</li>
+			<li>At some point in the future there could be the possiblity that a browser does not properly support namespaces or that the W3C will take a tougher stance against them.  In that case you can easily convert to the data-xxx style using the handy translation service mentioned above</li>
+		<ul>
+		<p>Additionally all binding information can be specified by code in the controller and/or in the model.  We don't like to prescribe any particular design pattern on you and in fact go out of our way to be flexible in terms of specifying binding information in the model, view and controller.</p>
+	</div>
+<!-- - - - - - - - - - - - - - - - -  Reference - Binding   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_binding" b:onarrival="page= 'reference_binding'" ></a>
+	<div b:showif="page == 'reference_binding'" class="right">
+		<h1>Binding</h1>
+		<p>Binding connects data to a form field or other DOM element.  The connection can be single directional which simply evaluates and expression and populates the value of a an element with the result of an expression or it can be bi-directional such that it links a form field with Javascript variable or propery.</p>
+		<h2>The b:bind Attribute</h2>
+		<p>The <strong>b:bind</strong> attribute contains a Javascript expression the result of which will be used to set the value of the element containing the attribute.  If the expression is not a string constant (e.g. does not begin with a quote) and the element containing the attribute is a form field then the binding is bi-directional.  In that case the bind expression is used to create an expression that can update a property or Javascript variable.  Bi-directional binding can be performed on these types of form fields:</p>
+		<ul>
+			<li><strong>&lt;input type="text" b:bind="customer.name" &gt;&lt;/input&gt;</strong></li>
+			<li><strong>&lt;input type="password" b:bind="authentication.verifyPassword" &gt;&lt;/input&gt;</strong></li>
+			<li><strong>&lt;input type="radio" name="cardtype" b:bind="card.type" b:truevalue="'Visa'" &gt;&lt;/input&gt;</strong></li>
+			<li><strong>&lt;input type="checkbox" b:bind="agreeded" b:truevalue="'yes'" b:falsevalue= "'no'" &gt;&lt;/input&gt;</strong></li>
+			<li><strong>&lt;select b:bind="state" b:fill="state_codes" b:using="state_names" &gt;&lt;/select &gt;</strong></li>
+			<li><strong>&lt;textarea b:bind="comment" &gt;&lt;/textarea &gt;</strong></li>
+		</ul>
+		<p>All other elements have single directional binding.  This also means that they can use expressions</p>
+		<ul>
+			<li><strong>&lt;span b:bind="gross - net" &gt;&lt;/span&gt;</strong>;</li>
+			<li><strong>&lt;li b:bind="element[ix].content" &gt;&lt;/li&gt;</strong></li>
+		</ul>
+		<h2>How expressions are evaluted</h2>
+		<p><strong>b:bind</strong> expressions are evaluated in the context of the model such that any properties of the model can be referred to without qualification. They are also evaluated with values for <strong>b:index</strong> and <strong>b:with</strong> set for the current row of iteration.</p>
+		<h2>When is data updated?</h2>
+		<p>The update expression is executed from events in the element containing the bind attribute.  The event depends on the type of element and on whether the <strong>b:when</strong> attribute is also present. In general updates occur when the form element loses focus, it's value is changed by clicking on it (radio buttons and checkboxes) or when it's value is changed by dropping down and selecting a value (select drop-downs).  In the case of input text and password fields <strong>b:when</strong> can be used to specify the number seconds the field will be polled for a change in value.  This allows data to be updated as it is typed.</p>
+		<p>The entire view is traversed everytime there is an event that could potentially change data in the model.  As the view is traversed a cached value of the DOM element is compared with result of evaluating the bind expression and if there is a change the DOM element is updated.  This provides adaquate speed such that the developper never needs to explicitly force the updating of the DOM when bound elements change.</p>
+		<h2>Binding to &lt;select&gt;</h2>
+		<p>When binding to selects these attributes are used:</p>
+		<ul>
+			<li><strong>b:fill</strong> an expression that returns an array of strings used to create <strong>&lt;option&gt;</strong> sub-elements to fill out the values for the drop-down.</li>
+			<li><strong>b:using</strong> an expression that returns an associate array that translates the strings in <strong>b:fill</strong> into the text values for the <strong>&lt;option&gt;</strong> sub-elements.</li>
+			<li><strong>b:bind</strong> creates a bi-directional binding to a Javascript property or variable that will select one of the values in the <strong>b:fill</strong> or the <strong>b:using</strong> array if specified.</li>
+		</ul>
+		<h2>Binding to checkboxes</h2>
+		<p>When binding to a check box you need to specify the values when the box is checked or unchecked</p>
+		<ul>
+			<li><strong>b:truevalue</strong> the value when the box is checked
+			<li><strong>b:falsevalue</strong> the value when the box is unchecked
+		</ul>
+		<h2>Binding to radio buttons</h2>
+		<p>When binding to a set of radio buttons you need to specify the value that determines whether the ratio button is checked.</p>
+		<ul>
+			<li><strong>b:truevalue</strong> the value when the box is checked
+		</ul>
+	</div>
+
+<!-- - - - - - - - - - - - - - - - - -  Reference - Iteration   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_iteration" b:onarrival="page= 'reference_iteration'" ></a>
+	<div b:showif="page == 'reference_iteration'" class="right">
+		<h1>Iteration</h1>
+<textarea id="reference_iteration" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script src="../../js/bindster.js"></script>
+		<script>
+			var model = {
+				states: [
+					{"name":"Alabama","abbr":"AL"},
+					{"name":"Alaska","abbr":"AK"},
+					/*....*/
+					{"name":"Wyoming","abbr":"WY"}
+				],
+			   search: ""
+			}
+		</script>
+	</head>
+	<body>
+		Starts With: <input b:bind="search" b:when="50"/><br /><br />
+		<table>
+			<tbody>
+				<b:iterate on="states" with="state" index="ax" counter="cx" b:filter="state.name.match(new RegExp('^' + search + '.*', 'i'))">
+					<tr b:class="{cx % 2 ? 'even' : 'odd'}">
+						<td b:bind="ax"></td>
+						<td b:bind="state.name"></td>
+						<td b:bind="state.abbr"></td>
+						<td><a href="" b:onclick="states.splice(ax,1)">Remove</a></td>
+					</tr>
+				</b:iterate>
+			</tbody>
+		</table>
+		<script>
+			var bindster = new Bindster(model);
+		</script>
+	</body>
+</html>
+</textarea>
+		<p>Iteration is the process of repeating nodes in the dom for each row in a corresponding array.  Practically this is equivalent iteration in a templating system.  The difference is that iteration is achieved by cloning nodes.  Each time the DOM is rendered it is synchronized with the current contents of the corresponding array.  This means that the iteration is dynamically kept in sync with changing values in the array.  Each iteration may reference either through binding or in conditional expressings a specific row in the array 
+		</p>
+		<p>Iteration can be applied using the <strong>&lt;b:iterate&gt;</strong> tag.</p>
+		<ul>
+				<li><strong>on</strong> a reference to an array within the model that is to control the iteration. </li>
+				<li><strong>with</strong> a reference to a property in the model that will be set to the row being iterated.  It can be referenced in conditionals, binding or in events (that use the b: namespace)</li>
+				<li><strong>index</strong> a reference to a property in the model that will be set to the zero-based oridinal of the row being iterated.</li>
+				<li><strong>counter</strong> a reference to a property in the model that will be set to a one based counter for each row being iterated.</li>
+				<li><strong>filter</strong> an expression that is evaluated on each iteration to determine whether the row in the array will be processed.</li>
+			</ul>
+		<p>Consider this simple example of iteration</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_iteration", 8, 17);</script>
+		</div>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_iteration", 21, 33);</script>
+		</div>
+		<p>and note the following:</p>
+		<ul>
+			<li><strong>&lt;b:iterate&gt;</strong> on line 24 is a node that will be iterated on (e.g. cloned) for each element in the array</li>
+			<li><strong>on</strong> refers the states array on line 10 within the model</li>
+			<li><strong>with</strong> refers to the state property in the model.  This need not be initialized in the model as iterate will do that as soon as it iterates.  You can see that the binding references in lines 27 and 28 refer to the state property to bind to the correct row being iterated</li>
+			<li><strong>index</strong> refers to the ax property in the model which will be set to the ordinal position in the array.  It is referenced in line 26 to display the state number</li>
+			<li><strong>counter</strong> is a counter referenced in line 25 to set an even / odd class to make the display more readable</li>
+			<li><strong>fiter</strong> an expression that matches the current state name with the search criteria entered by way of the bind on line 21</li>
+			<li>You must use b: in front of any events that will rely on <strong>b:with</strong> or <strong>b:index</strong> or require that the array be re-iterated an the completion of the event processing as is the case on the remove link on line 29.</li>
+		</ul>
+		<p>Here is the working example:</p>
+		<iframe class="example" src="samples/reference_iteration.html" style="width: 540px;height: 160px"></iframe>
+		<p>The <strong>b:iterate</strong> is provided for convenience.  Whenever you use a tag in the BINDster namespace, the attributes of the tag are prefixed with the name of the tag.  So the real attribute names for the iteration attributes are <strong>b:iterateon, b:iteratewith, b:interateindex, b:interatecounter, b:iteratefilter</strong>.   You can apply iteration to any element by using the real attribute names</p>
+	</div>
+	
+<!-- - - - - - - - - - - - - - - - - -  Reference - Conditionals   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_conditional" b:onarrival="page= 'reference_conditional'" ></a>
+	<div b:showif="page == 'reference_conditional'" class="right">
+		<h1>Conditional</h1>
+<textarea id="reference_conditional" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Conditional Test</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script src="../../js/bindster.js"></script>
+		<script>
+			var model = {
+				show: [{show: false},{show: false},{show: false},{show: false},{show: false},{show: false}],
+			}
+		</script>
+	</head>
+	<body>
+		<br />
+		<br />
+		<b:iterate on="show" with="decide" index="sx">
+			<div><input type="checkbox" b:bind="decide.show" b:truevalue="true" b:falsevalue="false" /> Show section <span b:bind="sx + 1"></span></div>
+		</b:iterate>
+		<b:if test="show[0].show" hide="visibility">
+			<h1>Section 1 - hide="visibility" </h1>
+			hide="visibility" takes space when hidden <br />
+			hide="visibility" takes space when hidden <br />
+		</b:if>
+		<b:if test="show[1].show" hide="display">
+			<h1>Section 2 - hide="display"</h1>
+			hide="display" takes no space when hidden <br />
+			hide="display" takes no space when hidden <br />
+		</b:if>
+		<b:if test="show[2].show" hide="remove">
+			<h1>Section 3 hide="remove"</h1>
+			hide="remove" will have remove textarea element <br />
+			hide="remove" will have remove textarea element <br />
+			<_textarea_>This is a text area.  Look for the count of text area elements at the top</_textarea_>
+		</b:if>
+		<br />Number of text areas = <span b:bind="document.getElementsByTagName('textarea').length"></span><br />
+		<div b:visibleif="show[3].show">
+			<h1>Section 4 - visibleif</h1>
+			visibleif takes space when hidden <br />
+			visibleif takes space when hidden <br />
+		</div>
+		<div b:showif="show[4].show">
+			<h1>Section 5 - showif</h1>
+			showif takes no space when hidden <br />
+			showif takes no space when hidden <br />
+		</div>
+		<b:if test="show[5].show" hide="offscreen">
+			<div style="height: 32767px">
+				<h1>Section 5 - hide="offscreen"</h1>
+			</div>
+			You can see this text because it follow a big div element 32767 pixels high
+		</b:if>
+		<script>
+			var bindster = new Bindster(model);
+		</script>
+	</body>
+</html>
+</textarea>
+		<p>Conditional expressions allow DOM elements to be appear and disappear based on the value of properties in the model.  Just like with binding, the behaviour is immediate when the properties in the model are changed by the controller.  There attributes which control the hiding and showing of elements:</p>
+		<ul>
+			<li><strong>b:test="js expression"</strong> - Defines an expression that is evaluated to determines whether the element should be hidden.
+				It is usually used inside the convenience element <strong>&lt;b:if&gt;&lt;/b:if&gt;</strong> as in: 
+					<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>&lt;b:if test="balance &lt; 0" &gt;Please deposit some cash&lt;/b:if&gt;</strong>. 
+					<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(You don't need the b: namespace when BINDster attributes are used within BINDSter tags)<br /><br />
+			</li>
+			<li><strong>b:hide="hide method"</strong>determines the mothod for hiding and showing elements.  These values are available:<br /><br />
+				<ul>
+					<li><strong>remove</strong> - Hide by removing the element's children and moving them into a document fragment and copying them back into the DOM when the elemetn is again shown. <strong>This is the default method for test.</strong></li>
+					<li><strong>display</strong> - Hide using <strong>display: none</strong> such that the element occupies no space.  The old display value is rememberd when the element is shown.</li>
+					<li><strong>visibility</strong> - Hide using <strong>visibility: hidden</strong> such that the element occupies space but does not display. visiblity is set to visible when the element is shown.</li>
+					<li><strong>offscreen</strong> - Hide by positioning the element absolute with a top of -32767px such that the element is properly rendered but not actually viewable.  This is useful in some circumstances where you would want to use  <strong>display: none</strong> but where you need the HTML to be fully rendered so heights and widths are calculated correctly even while hidden.<br /><br /></li>
+				</ul>
+			</li>
+			<li><strong>b:showif="js expression"</strong> - Short for <strong>test</strong> with <strong>b:hide="display"</strong> as in
+			<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>&lt;span b:showif="balance &lt; 0" &gt;Please deposit some cash&lt;/span&gt;</strong> 
+			<br /><br /></li>
+			<li><strong>b:visibleif="js expression"</strong>  - Short for <strong>test</strong> with <strong>b:hide="visibility"</strong> as in
+			<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>&lt;span b:visibleif="balance &lt; 0" &gt;Please deposit some cash&lt;/span&gt;</strong> 
+			<br /><br /></li>
+		</ul>
+		<p>This sample shows how elements are shown and hidden</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_conditional", 18, 53);</script>
+		</div>
+		<iframe class="example" src="samples/conditional.html" style="width: 600px;height: 800px"></iframe>
+	</div>
+
+<!-- - - - - - - - - - - - - - - - - -  Reference - Expressions   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_expressions" b:onarrival="page= 'reference_expressions'" ></a>
+	<div b:showif="page == 'reference_expressions'" class="right">
+		<h1>Expressions</h1>
+		<p>BINDSter also can bind values to most CSS attributes. To do this:</p>
+		<ul>
+			<li>Prepend the attribute with the BINDSter name space (b:)</li>
+			<li>Use any Javascript expression within curly brackets as in:
+				<br /><br /><strong>b:style="width: {totalWidth}px; height: {x + y}px" b:class="{ix % 1 ? 'odd' : 'even'}"</strong>
+			</li>
+		</ul>
+		<p>The expression is evaluated in the context of the model so references to the model need no qualification. You can use this on all attributes execpt for events (onxxxxx) because events are already interpreted as JS expressions</p>
+	</div>
+
+<!-- - - - - - - - - - - - - - - - - -  Reference - Mappers   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_mappers" b:onarrival="page= 'reference_mappers'" ></a>
+	<div b:showif="page == 'reference_mappers'" class="right">
+		<h1>Mappers (Custom Tags)</h1>
+<textarea id="reference_custom_tags" style="display: none">
+<b:mapper tag="mybutton">
+	<a class="graphicButton" href="javascript:void(0);" b:onclick="__onclick__" id="__id__">
+		<span class="leftEnd"></span>
+		<span class="middle" b:bind="'__text__'"></span>
+		<span class="rightEnd"></span>
+	</a>
+</b:mapper>
+
+<b:mybutton onclick="doSomething()" text="Open Account"></b:mybutton>
+
+<b:mapper tag="formfield">
+	<dl b:class="__class__">
+		<dt>
+			<label class="fieldLabel" for="{'__bind__'.replace(/\./, '__')}" b:bind="'__label__' + ':'" b:showif="'__label__'"></label>
+		</dt>
+		<dd>
+			<b:if test="'__type__' == 'text'">
+				<input b:name="__bind__"  b:id="__bind__" type="text" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__" b:focus="__focus__" b:onenter="__onenter__" b:size="__size__" b:maxlength="__maxlength__" onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+			</b:if>
+			<b:if test="'__type__' == 'password'">
+				<input b:name="__bind__" b:id="__bind__" type="password" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__"  b:focus="__focus__" b:onenter="__onenter__" b:size="__size__" b:maxlength="__maxlength__" onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+			</b:if>
+			<b:if test="'__type__' == 'select'">
+				<select b:name="__bind__" b:id="__bind__" type="password" b:bind="__bind__" b:validate="__validate__" b:fill="__fill__" b:using="__using__" b:focus="__focus__" b:onenter="__onenter__" onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')"></select>
+			</b:if>
+			<b:if test="'__type__' == 'radio'">
+				<input b:name="__bind__" type="radio" b:truevalue="__truevalue__" b:id="__bind__" type="text" b:bind="__bind__" b:validate="__validate__"  b:focus="__focus__"  onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+				<span b:bind="'__text__'"></span>
+			</b:if>		    
+			<b:if test="'__type__' == 'checkbox'">
+				<input b:name="__bind__" type="checkbox" b:truevalue="__truevalue__" b:falsevalue="__falsevalue__" b:id="__bind__" type="text" b:bind="__bind__" b:validate="__validate__"  b:focus="__focus__"  onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+				<span b:bind="'__text__'"></span>
+			</b:if>
+			<div class="error fieldError" b:showif="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+		</dd>
+	</dl>
+</b:mapper>
+
+<b:formfield type="text" label="EMail Address" bind="emailAddress" validate="c.valid_required()"></b:formfield>
+<b:formfield type="password" label="Password" bind="password"></b:formfield>
+<b:formfield type="checkbox" text="I agree" bind="agreement" truevalue="true" falsevalue="false"></b:formfield>
+<b:formfield type="select" label="" bind="state" fill="state_codes" using="state_names"></b:formfield>
+<b:formfield type="radio" label="Like" bind="like" b:truevalue="'high'" text="A lot"></b:formfield>
+<b:formfield type="radio"              bind="lik" b:truevalue="'low'" text="Not so Much"></b:formfield>
+
+</textarea>
+		<p>Mappers allow you to create your own tags that take will insert a document fragment in place of the tag while mapping attributes in the custom tag into the document fragment.  The custome tags and document fragment are defined using
+			<br /><br />&lt;tag name="tag name"&gt;Document framgement (HTML)&lt;/tag&gt;
+			Within the document fragment you can use <strong>__attribute name__</strong> to include the value of an attribute when the fragement is copied upon usage.
+			They are useful both for creating re-usable components. Here is simple mapper that defines a graphic button
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_custom_tags", 1, 9);</script>
+		</div>
+		<p>A couple of things to note:</p>
+		<ul>
+			<li>Mappers are defined in the body</li>
+			<li>They must be defined before they are used</li>
+			<li>Since you can only map attributes to attributes the way to include the value as text elements within markup is to use b:bind as a constant as is done here with the text of the button.</li>
+			<li>If you don't include an attribute (e.g. id) then the attribute will not be mapped.  In this example id= will not be part of the generated mark-up
+		</ul>
+		<p>You can use conditionals in a mapper though they are generated and then evaluated.  Here is an example of a mapper that generates standard HTML for form fields using the common &lt;dt&gt;&lt;/dt&gt;&lt;dd&gt;&lt;/dt&gt;&lt;/dl&gt; pattern</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_custom_tags", 11, 99);</script>
+		</div>
+	</div>
+
+<!-- - - - - - - - - - - - - - - - -  Reference - Wrappers   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_wrappers" b:onarrival="page= 'reference_wrappers'" ></a>
+	<div b:showif="page == 'reference_wrappers'" class="right">
+		<h1>Wrappers</h1>
+
+<textarea id="reference_wrappers" style="display: none">
+<table b:wrappername="rounded" cellspacing="0" cellpadding="0">
+	<tr>
+		<td class="wrap_inner_ul"><img src="pixel.gif"></td>
+		<td class="wrap_inner_t"><img src="pixel.gif"></td>
+		<td class="wrap_inner_ur"><img src="pixel.gif"></td>
+	</tr>
+	<tr>
+		<td class="wrap_inner_l"><img src="pixel.gif"></td>
+		<td class="wrap_inner_m"><b:insert></b:insert></td>
+		<td class="wrap_inner_r"><img src="pixel.gif"></td>
+	</tr>
+	<tr>
+		<td class="wrap_inner_ll"><img src="pixel.gif"></td>
+		<td class="wrap_inner_b"><img src="pixel.gif"></td>
+		<td class="wrap_inner_lr"><img src="pixel.gif"></td>
+	</tr>
+</table>
+
+<b:wrap b:with="rounded" selector=".super_rounded" ></b:wrap>
+</textarea>
+
+		<p>Wrappers allow DOM element to be "wrapped" within a document fragment.  The wrapping is done based on selectors so any element of a particular class/id/tag specification can be wrapped.  The wrappers are defined by applying the <strong>b:wrappername="wrapper name"</strong> to a container that then becomes a document fragement that will be used to wrap elements that reference it. The fragment should contain <strong>&lt;insert&gt;&lt;/insert&gt;</strong> to indicate where the referenced element should be copied.  The DOM element that matches the selector and all it's descendands will be inserted into the document fragment and then document fragment replaces the original element.</p>
+		<p>This example will wrap any element with a class of super_rounded with a table structure tha can produce rounded corners.</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_wrappers");</script>
+		</div>
+	</div>
+
+<!-- - - - - - - - - - - - - - - - - -  Reference - Bookmarks   - - - - - - - - - - - - - - - - - - -->
+	
+	<a id="page_reference_anchors" b:onarrival="page= 'reference_anchors'" ></a>
+	<div b:showif="page == 'reference_anchors'" class="right">
+		<h1>Bookmarks</h1>
+<textarea id="reference_anchors" style="display: none">
+<div class="menu">
+	<a href="#reference_binding">Binding<a>
+	<a href="#reference_iteration">Iteration></a>
+	<a href="#reference_conditional>Conditionals</a>
+	<div class="clear">&nbsp;</div>
+</div>
+<a id="page_reference_binding" b:onarrival="page= 'reference_binding'" ></a>
+<div b:showif="page == 'reference_binding'" class="right">
+	<h1>Binding</h1>
+	<p>Binding connects data to a form field or other DOM element.  The connection can be single directional which simply evaluates and expression and populates the value of a an element with the result of an expression or it can be bi-directional such that it links a form field with Javascript variable or propery.</p>
+</div>
+</textarea>
+		<p>Dyanamic applications will often present multiple steps or states.  Rather than each one being a seperate page that is loaded by the browser this often achieved by simply showing and hiding portions of the view.  There are two problems with this
+		<ul>
+			<li>The particular step is not recorded in the URL so you copy the URL and share it</li>
+			<li>The back button does not get you to the previous step</li>
+		</ul>
+		<p>Bookmarks (named anchors) solve both of these issues and BINDster makes it easy to incorporate them in an application.
+		</p>
+		<p>To use this technique place <strong>&lt;a name="hash value url suffix" b:onarrival="code to establish state"&gt;&lt;/a&gt;</strong> in front of each state.  The "code to establish state" will generally be code that sets everything needed to put your application in the state it needs to be in.  Then when you want to provide a link that takes you to that particular state you simply go to the "#hash value url suffix".  BINDster will detect that a new URL has is present and execute the "code to establish state".</p>
+		<p>This documentation uses named anchors to navigate through the document.</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_anchors");</script>
+		</div>
+		<p>A few things to note:</p>
+		<ul>
+			<li>The browser will normally try and adjust the scroll position so that the named anchor will be a the top of the display.  To prevent this BINDSter relocates anchors containing the <strong>b:onarrival</strong> attribute as the first children of the body.</li>
+			<li>The mechanism works by setting a timer interval and observing changes in the URL that match one of the named anchors with an  <strong>b:onarrival</strong> tag.  This means a few millisecond lag in clicking a link and displaying the state.  Generally this is still much faster than receiving a new page from the web server</li>
+		</ul>
+	</div>
+
+<!-- - - - - - - - - - - - - - - - -  Reference - Filters   - - - - - - - - - - - - - - - - - - -->
+
+	<a id="page_reference_filters" b:onarrival="page= 'reference_filters'" ></a>
+	<div b:showif="page == 'reference_filters'" class="right">
+		<h1>Parsers, Formatters, Validators and Errors</h1>
+<textarea id="reference_filters" style="display: none">
+<script>
+MyController.prototype.parseDate = function() {
+	if (this.value == null || this.value.length == "") return null;
+	var parsed = Date.parse(this.value);
+	if (isNaN(parsed)) {
+		throw {message: "format"}
+	}
+	return new Date(parsed);
+}
+</script>
+<script>
+MyController.prototype.isAtLeast = function(min) {
+		if (this.value.length > 0 && this.value < min) 
+			throw {message: "minvalue", mininum: min}
+}
+</script>
+<script>
+MyController.prototype.formatDate = function {
+		if (!this.value) return "";
+		var date = this.value;
+		return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+}
+</script>
+<b:message name="minvalue" value="Must be at least {minimum}" ></b:message>
+<b:message name="minvalue" value="{field} must be at least {minimum}"></b:message>
+<input type="text" bind="deposit_amount" b:parse="c.parseCurrency()" b:validate="c.isAtLeast(25)" ></input>
+<div b:showif="isError('email_address')>" b:binderror="email_address" b:binderrordata="{field: 'Amount of Your Deposit'}"></div>
+</textarea>
+		<p>The data in the model should be in a form that makes it useful for computing rather than displaying.  The data you see in your view needs to be formatted as expected by the user.  Data binding in BINDster provides:</p>
+		<ul>
+			<li><strong>Parsers</strong> - methods in the controller that parses data in form fields into a suitable form and throws errors when the format is incorrect.  BINDster will never transfer the data to the model unless the parser is happy with it.  Use the <strong>b:parse="js code"</strong> on any form field that contains a <strong>b:bind</strong>.  The "js code" is simply a call to a method in the controller (e.g. c.parseDate())</li>
+			<li><strong>Validator</strong> - methods in the controller that process the data after it is parsed and determine whether it is correct or not.  It can trhow an error when the format is incorrect.  BINDster will never transfer the data to the model unless the validators are happy with it. Use the <strong>b:validate="js code"</strong> on any form field that contains a <strong>b:bind</strong>.  The "js code" is simply one or more calls to validators methods in the controller (e.g. c.isBetween(0, 50);isMinimumLength(8))</li>
+			<li><strong>Error Binding</strong> - The <strong>b:binderror</strong> attribute which binds an element to any error that occurs as part of validators or parsers.</li>
+			<li><strong>Message Tags</strong> - The <strong>b:message</strong> tag which maps a message code and data parameters to a message string so that the text of the error can be kept out of the controller.</li>
+			<li><strong>Formatters</strong> - methods in the controller that format data before it is transferred to the view.  To invoke the formatter use <strong>b:format="js code"</strong> on any element that contains a <strong>b:bind</strong>.  The "js code" is simply a call to a method that will return the formatted value to be transferred to the element (e.g. c.formatDate())</li>
+		</ul>
+		<h2>Parsers</h2>
+		<p>Parsers should do the following:</p>
+		<ul>
+			<li>Expect the value directly from the form field in the controller's value property (e.g. this.value)</li>
+			<li>Translate the value as needed and return it</li>
+			<li>Throw an error if the value cannot be parsed.  The structure thrown contains:
+				<ul>
+					<li>A message property which is either an error message or the name of a <strong>b:message</strong> which defines an error message</li>
+					<li>Any other properties that will be used by the <strong>b:message</strong> tag to format the error message</li>
+				</ul>
+			<li>Anything that the controller needs to do by way of setting state to indicate that an error condition exists.</li>
+		</ul>
+		<p>Here is an example of a parser:
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_filters", 1, 10);</script>
+		</div>
+		<h2>Validators</h2>
+		<p>Validators are similar to parsers but generally are not expected to have to parse the values.  The validators are called after the parser.
+			The should do the following:</p>
+		<ul>
+			<li>Expect the value in the controller's value property (e.g. this.value)</li>
+			<li>Accept any parameters passed to function (e.g. c.minimumLength(8)),</li>
+			<li>Validate the value</li>
+			<li>Throw an error if the value cannot be parsed.  The structure thrown contains:
+				<ul>
+					<li>A message property which is either an error message or the name of a <strong>b:message</strong> which defines an error message</li>
+					<li>Any other properties that will be used by the <strong>b:message</strong> tag to format the error message</li>
+				</ul>
+			<li>Anything that the controller needs to do by way of setting state to indicate that an error condition exists.</li>
+		</ul>
+		<p>Here is an example of a validator:
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_filters", 11, 16);</script>
+		</div>
+		<h2>Message Tags</h2>
+		<p>
+		A special tag that allows the text of errors to be defined directly in the view to keep text out of the controller.  This makes multi-lingual applications easier to manage since only the view need be modified.  They are defined as:
+			<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt;message name="error name" value="error message"&gt;&lt;/message&gt;
+			<br /><br />
+		The "error name" is a name that is referred to by the parser or validator when they throw an error.  It is the <strong>message</strong> property of the object that they throw.  The "erro name" is the error string and may inclue {property references} within curly braces that inject values from other properties that are in the object being thrown by a parser or validator. Here is an example</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_filters", 24, 24);</script>
+		</div>
+		<h2>Error Binding</h2>
+		<p>It is customary to place an error message in view, often next to the field that is in error.  BINDster has two attributes that help with this:</p>
+		<ul>
+			<li>The <strong>b:binderror="bind property"</strong> attribute which will bind an element to any error generated for the property being bound to.</li>
+			<li>The <strong>b:binderrordata="extra data"</strong> attribute which when used with <strong>b:binderror="bind property"</strong> let's you specify additional properties that may be injected in the <strong>b:message</strong> tag</li>
+		</ul>
+		<p>Here is a complete example:
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_filters", 25, 40);</script>
+		</div>
+		<h2>Formatters</h2>
+		<p>Formatters should do the following:</p>
+		<ul>
+			<li>Expect the the value to be formatted in the controller's value property.</li>
+			<li>Format the data as needed and return the formatted value</li>
+		</ul>
+		<p>Here is an example of a formatter:
+		</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_filters", 17, 23);</script>
+		</div>
+		
+	</div>
+
+<!-- - - - - - - - - - - - - - - - - -  Reference - Forms   - - - - - - - - - - - - - - - - - - -->
+	
+	<a id="page_reference_forms" b:onarrival="page= 'reference_forms'" ></a>
+	<div b:showif="page == 'reference_forms'" class="right">
+		<h1>Forms</h1>
+<textarea id="reference_forms" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+<head>
+	<title>Bindster Form Example</title>
+	<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+	<script src="../../js/bindster_daily.js"></script>
+	<script>
+		function Controller() {};
+		Controller.prototype = {
+
+			// Actions
+			submit: function () {
+				this.validate();
+				if (this.model.password != this.model.validatePassword)
+					this.setError(this.model, "validatePassword", {message: "nomatch"});
+				if (!this.hasErrors())
+					alert("Form OK");
+			},
+
+			// validators
+			isName: function () {this.doesMatch("[^0-9A-Za-z \']", "name")},
+			isEmail: function () {this.doesMatch("^[^\@ ]+\@[^\@ \.]+\.[^\@ ]+", "email")},
+			isNumeric: function () {this.doesMatch("[^0-9]", "numeric")},
+			isNumeric: function () {this.doesMatch("[^0-9A-Za-z]", "alphanumeric")},
+			isPhone: function () {this.doesMatch("[^0-9 \(\)-]", "phone")},
+			notEmpty: function() {
+				if (!this.value || this.value.length == 0) {
+					throw {message: "required"};
+				}
+			},
+			isMinLength: function(len) {
+				if (this.isEmpty() || this.value.length < len) 
+					throw {message: "minlength", minlength: len}
+			},
+			isMaxlength: function(len) {
+				if (this.isEmpty || this.value.length > len) 
+					throw {message: "maxlength", maxlength: len}
+			},
+			isEmpty: function(value) {
+				return this.value == null || this.value.length == 0
+			},
+			
+			// parsers
+			parseCurrency: function() {
+				if (!this.value) return this.value;
+				var n = this.value;
+				n = n.replace(/[^0-9\.\-]/g, "");
+				var f = parseFloat(n);
+				if (isNaN(f))
+					throw {message: "currency"};
+				var result = Math.floor(f * 100 + .5) / 100;
+				return result;
+			},
+			parseDate: function() {
+				if (this.value == null || this.value.length == "") return null;
+				var parsed = Date.parse(this.value);
+				if (isNaN(parsed)) {
+					throw {message: "date"}
+				}
+				return new Date(parsed);
+			},
+			
+			// Formatters	
+			formatDate: function()	{
+				if (!this.value) return this.value;
+				var date = this.value;
+				return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+			},
+
+			// Format, Parse, Validate common functiosn
+			formatCurrency: function(prependSymbol) {
+				if(!this.value) return "";
+				prependSymbol = (prependSymbol ? prependSymbol : "$") + " ";
+				var n = (Math.round(this.value * 100) / 100) + "";
+				n = n.replace(/\.([0-9])$/, ".$10");
+				return prependSymbol + this.addCommas(n);
+			},
+			addCommas: function (nStr)	{
+				nStr += '';
+				x = nStr.split('.');
+				x1 = x[0];
+				x2 = x.length > 1 ? '.' + x[1] : '';
+				var rgx = /(\d+)(\d{3})/;
+				while (rgx.test(x1)) {
+					x1 = x1.replace(rgx, '$1' + ',' + '$2');
+				}
+				return x1 + x2;
+			},
+			doesMatch: function(regex, error) {
+				if (this.value != null && this.value.length > 0 && !(this.value + "").match(regex))
+					throw error ? {message: error} : " Incorrect Format";
+			}
+
+		}
+		var model = {
+			email: "",
+			password: "",
+			validatePassword: "",
+			firstName: "",
+			middleName: "",
+			lastName: "",
+			born: null,
+			contribution: null
+		}
+
+
+	</script>
+</head>
+<style>
+	.fieldLabel {float: left; width: 160px; text-align: right;padding: 6px;height: 20px; }
+	.fieldInput {float: left; width: 200px; height: 20px}
+	.field {clear: both; padding: 6px}
+	.clear {clear: both; height: 0px; display: block; overflow: hidden}
+	.fieldError {float: left; color: red; margin-left: 16px;padding:3px}
+</style>
+<body>
+	
+	<b:mapper tag="formfield">
+		<div class="field">
+			<label class="fieldLabel" for="{'__bind__'.replace(/\./, '__')}" b:bind="'__label__' + ':'" b:showif="'__label__'"></label>
+			<div class="fieldInput">
+				<b:if test="'__type__' == 'text'">
+					<input b:name="__bind__" type="text" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__" b:size="__size__" b:maxlength="__maxlength__" b:focus="1"/>
+				</b:if>
+				<b:if test="'__type__' == 'password'">
+					<input b:name="__bind__"type="password" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__"  b:size="__size__" b:maxlength="__maxlength__"   b:focus="1"/>
+				</b:if>
+				<b:if test="'__type__' == 'select'">
+					<select b:name="__bind__"type="password" b:bind="__bind__" b:validate="__validate__" b:fill="__fill__" b:using="__using__"></select>
+				</b:if>
+				<b:if test="'__type__' == 'radio'">
+					<input b:name="__bind__" type="radio" b:truevalue="__truevalue__"type="text" b:bind="__bind__" b:validate="__validate__" />
+					<span b:bind="'__text__'"></span>
+				</b:if>		    
+				<b:if test="'__type__' == 'checkbox'">
+					<input b:name="__bind__" type="checkbox" b:truevalue="__truevalue__" b:falsevalue="__falsevalue__"type="text" b:bind="__bind__" b:validate="__validate__"/>
+					<span b:bind="'__text__'"></span>
+				</b:if>
+			</div>
+				<div class="error fieldError" b:showif="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+		</div>
+	</b:mapper>
+
+	<b:formfield type="text" bind="email" label="EMail Address" validate="isEmail();notEmpty();" size="100"></b:formfield>
+	<b:formfield type="password" bind="password" label="Password" size="16" validate="notEmpty()"></b:formfield>
+	<b:formfield type="password" bind="validatePassword" label="Confirm Password" size="16" validate="notEmpty()"></b:formfield>
+	<b:formfield type="text" bind="firstName" label="First Name" validate="notEmpty();" size="100"></b:formfield>
+	<b:formfield type="text" bind="middleName" label="Middle Name" size="100"></b:formfield>
+	<b:formfield type="text" bind="lastName" label="Last Name" validate="notEmpty();" size="100"></b:formfield>
+	<b:formfield type="text" bind="born" label="Date of Birth" parse="parseDate()" format="formatDate()"  validate="notEmpty()"size="20"></b:formfield>
+	<b:formfield type="text" bind="contribution" label="Contribution" parse="parseCurrency()" format="formatCurrency()" size="20" validate="notEmpty()"></b:formfield>
+
+	<div class="clear"></div>
+	<a href="#" b:onclick="submit()">Submit</a>
+
+
+	<b:message name="nomatch" value="Passwords must match" ></b:message>
+	<b:message name="email" value="{field} must be a valid email address" ></b:message>
+	<b:message name="date" value="{field} must be a valid date in the form mm-dd-yyyy" ></b:message>
+	<b:message name="number" value="{field} must be numeric" ></b:message>
+	<b:message name="currency" value="{field} must be in dollars" ></b:message>
+	<b:message name="required" value="Please enter {field}" ></b:message>
+	<b:message name="minlength" value="{anOrA(field)} must be at least {minlength} characters" ></b:message>
+	<b:message name="maxlength" value="{anOrA(field)} must be less than {maxlength} characters" ></b:message>
+
+	<script>
+		var bindster = new Bindster(model, null, new Controller());
+	</script>
+
+</body>
+</html>
+</textarea>
+		<p>Forms leverage all of the features of <a href="#reference_binding">binding</a> as well as <a href="#reference_filters">parsers, formatters and validators</a>.  Putting all of these things together you can create very robust forms with flexible and intuitive validation.  This example shows all the features for form handling.</p> 
+		<iframe class="example" src="samples/reference_forms.html" style="width: 720px; height: 380px"></iframe>
+		<p>The form fields themselves use custom tags:</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_forms", 146, 153);</script>
+		</div>
+		<p>The custom tag is a <strong>mapper</strong> which will include the correct form field based on the paramters</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_forms", 120, 144);</script>
+		</div>
+		<p>The mapper also contains an error field at the end that is bound to any errors assocatiated with the binding using <strong>b:binderror</strong> and <strong>b:binderrordata</strong>.  The latter supplies a field name (reusing the field label) for the benefit of any error declartions which can now include <strong>{field}</strong></p>
+		<p>Here are the messages</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_forms", 159, 166);</script>
+		</div>
+		<p>And here is the controller which contains all of the formatters, parsers and validators</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_forms", 10, 94);</script>
+		</div>
+		<p>It also has a submit function at line 15.  The submit function calls the <strong>validate</strong> method which is injected into the controller.  This method will run through all of the validation mostly to catch any fields that are required.  It then calls another injected method <strong>hasErrors</strong> to see if there are any outstanding errors. </p>
+			
+	</div>
+	
+	<a id="page_reference_focus" b:onarrival="page= 'reference_focus'" ></a>
+	<div b:showif="page == 'reference_focus'" class="right">
+		<h1>Focus</h1>
+		<p></p>
+	</div>
+	
+	<a id="page_reference_events" b:onarrival="page= 'reference_events'"></a>
+	<div b:showif="page == 'reference_events'" class="right">
+		<h1>Events</h1>
+		<p></p>
+	</div>
+	
+	<a id="page_reference_controllers" b:onarrival="page= 'reference_controllers'" ></a>
+	<div b:showif="page == 'reference_controllers'" class="right">
+		<h1>Controllers</h1>
+		<p></p>
+	</div>
+	
+	<a id="page_reference_views" b:onarrival="page= 'reference_views'" ></a>
+	<div b:showif="page == 'reference_views'" class="right">
+		<h1>Views</h1>
+		<p></p>
+	</div>
+
+	<div class="clear">&nbsp;</div>
+
+</div>
+
+
+<script>
+	var bindster = new Bindster(model, null, new Controller());
+</script>
+  
+ </body>
+</html>

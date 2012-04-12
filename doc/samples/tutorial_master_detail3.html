@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="http://bindster.com/examples/css/site.css" media="all" />
+		<script type="text/javascript" src="../../js/bindster.js"></script>
+		<script type="text/javascript">
+			var model = {
+				addresses: [
+					{name: "Barack Obama", email:"prez@whitehouse.gov",
+					 street: "1600 Pennsylvania Ave", city: "Washington",
+					 state: "DC", zip: "20500",	 phone: "(555) 555-5555"},
+					{name: "George Bush", email:"gb@alumni.whitehouse.gov",
+					 street: "Praire Chapel Ranch", city: "Crawford",
+					 state: "TX", zip: "76638", phone: "(555) 555-5555"},
+				],
+				popup: false,
+				current_ax: 0
+			}
+			function Controller() {
+			};
+			Controller.prototype = {
+				newAddress: function (ax) {
+					this.model.addresses.push({name: "", email:"", street: "", city: "",
+						state: "", zip: "", phone_type: "", phone: "", ext: ""});
+					this.m.current_ax = this.m.addresses.length - 1;
+					this.m.current_address = this.m.addresses[this.m.current_ax]
+					this.m.popup = true;
+				},
+				removeAddress: function (ax) {
+					this.model.addresses.splice(ax,1);
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="view" style="position: relative">
+			<table>
+				<tbody>
+					<b:iterate on="addresses" index="ax" with="address">
+						<tr	b:class="{(current_ax == ax ? 'active' : '')}" b:onclick="{current_ax = ax;current_address = address}">
+							<td>
+								<span b:bind="address.name"></span><br />
+								<span b:bind="address.phone"></span>
+							</td>
+							<td>
+								<span b:bind="address.email" /></span><br />
+								<span b:bind="address.street"></span><br />
+								<span b:bind="address.city"></span>
+								<span b:bind="address.state"></span>
+								<span b:bind="address.zip"></span>
+							</td>
+							<td><a b:onclick="{current_address = address;popup=true}" href="">Edit</a></td>
+							<td><a b:onclick="{c.removeAddress(ax)}" href="">Remove</a></td>
+						</tr>
+					</b:iterate>
+				</tbody>
+			</table>
+			<p><a b:onclick="{c.newAddress()}" href="">Add New Address</a></p>
+			<b:if test="popup">
+				<div class="popup" b:showif="{popup}" style="position: absolute; top: 16px; left: 16px">
+					First: &nbsp;&nbsp; <input b:focus="1" b:bind="current_address.name" />
+					Last: <input b:bind="current_address.email" /><br />
+					Street: <input b:bind="current_address.street" /><br>
+					City: &nbsp;&nbsp;&nbsp; <input b:bind="current_address.city" /> 
+					State: <input class="state" b:bind="current_address.state" />
+					Zip: <input class="zip" b:bind="current_address.zip" /><br />
+					<p><a b:onclick="{popup=false}" href="">Done</a></p>
+				<div>
+			</b:if>
+		</div>			
+		<script type="text/javascript">
+			var bindster = new Bindster(model, "view", new Controller());
+		</script>
+	</body>
+</html>

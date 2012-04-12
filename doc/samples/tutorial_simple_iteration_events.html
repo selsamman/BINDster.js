@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script type="text/javascript" src="../../js/bindster.js"></script>
+		<script type="text/javascript">
+			var model = {
+				addresses: [
+					{name: "Barack Obama", email:"prez@whitehouse.gov"},
+					{name: "George Bush", email:"gb@alumni.whitehouse.gov"}
+				]
+			}
+			function Controller() {};
+			Controller.prototype = {
+				addAddress: function (new_name, new_email) {
+					this.model.addresses.push({name: new_name, email: new_email});
+				},
+				removeAddress: function (ax) {
+					this.model.addresses.splice(ax,1);
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="view">
+			<table>
+				<tbody>
+					<b:iterate on="addresses" index="ax">
+						<tr>
+							<td><input b:bind="addresses[ax].name" /></td>
+							<td><input b:bind="addresses[ax].email" /></td>
+							<td><a b:onclick="{controller.removeAddress(ax)}" href="">Remove</a></td>
+						</tr>
+					</b:iterate>
+				</tbody>
+			</table>
+			<p><a b:onclick="{controller.addAddress('', '')}" href="">Add New Address</a></p>
+		</div>
+		<script type="text/javascript">
+			var bindster = new Bindster(model, 'view', new Controller());
+		</script>
+	</body>
+</html>

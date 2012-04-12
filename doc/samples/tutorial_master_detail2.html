@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:bs="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="http://bindster.com/examples/css/site.css" media="all" />
+		<script type="text/javascript" src="../../js/bindster.js"></script>
+		<script type="text/javascript">
+			var model = {
+				addresses: [
+					{name: "Barack Obama", email:"prez@whitehouse.gov",
+					 street: "1600 Pennsylvania Ave", city: "Washington",
+					 state: "DC", zip: "20500",	 
+						phones: [{number: "(555) 555-5551"},{number: "(555) 555-5552"},{number: "(555) 555-5553"}]
+					},
+					{name: "George Bush", email:"gb@alumni.whitehouse.gov",
+					 street: "Praire Chapel Ranch", city: "Crawford",
+					 state: "TX", zip: "76638",
+						phones: [{number: "(555) 555-5554"},{number: "(555) 555-5555"}]
+					},
+					{name: "Mitt Romney", email:"mitt@onepercent.com",
+						 street: "111 State Stree", city: "Boston",
+						 state: "MA", zip: "25533",
+							phones: [{number: "(555) 555-5556"},{number: "(555) 555-5557"}]
+					}
+				],
+				curr_address: null
+			}
+			function Controller() {
+				this.popup = false;
+			};
+			Controller.prototype = {
+				newAddress: function () {
+					this.model.addresses.push({name: "", email:"", street: "", city: "",
+						state: "", zip: "", phones: [], });
+					this.model.curr_address = this.m.addresses[this.m.addresses.length - 1];
+					this.popup = true;
+				},
+				removeAddress: function (ix) {
+					this.model.addresses.splice(ix,1);
+				},
+				newPhone: function(curr_address) {
+					curr_address.phones.push({number: ""});
+				},
+				removePhone: function(curr_address, ix) {
+					curr_address.phones.splice(ix, 1);
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="view" style="position: relative">
+			<table>
+				<tbody>
+					<b:iterate on="addresses" with="address" index="address_index">
+						<tr b:class="{(curr_address == address ? 'active' : '')}" b:onclick="{curr_address = address}">
+							<td>
+								<span b:bind="address.name"></span>
+								<b:iterate on="address.phones" with="phone">
+									<span>
+										<br /><span b:bind="phone.number" b:onclick="alert(phone.number)"></span>
+									</span>
+								</b:iterate>
+							</td>
+							<td>
+								<span b:bind="address.email" /></span><br />
+								<span b:bind="address.street"></span><br />
+								<span b:bind="address.city"></span>
+								<span b:bind="address.state"></span>
+								<span b:bind="address.zip"></span>
+							</td>
+							<td><a b:onclick="{curr_address = address;c.popup=true}" href="">Edit</a></td>
+							<td><a b:onclick="{c.removeAddress(address_index)}" href="">Remove</a></td>
+						</tr>
+					</b:iterate>
+				</tbody>
+			</table>
+			<p><a b:onclick="{c.newAddress()}" href="">Add New Address</a></p>
+			<div class="popup" b:showif="{c.popup}" style="position: absolute; top: 16px; left: 16px">
+				<div class="address">
+					First: &nbsp;&nbsp;&nbsp; <input b:bind="curr_address.name" />
+					Last: &nbsp;<input b:bind="curr_address.email" /><br />
+					Street: &nbsp;<input b:bind="curr_address.street" /><br>
+					City: &nbsp;&nbsp;&nbsp;&nbsp; <input b:bind="curr_address.city" /> 
+					State: &nbsp;<input class="state" b:bind="curr_address.state" />
+					Zip: &nbsp;<input class="zip" b:bind="curr_address.zip" /><br />
+				</div>
+				<div class="phone" b:iterate="phone : curr_address.phones index phone_index">
+					Phone:&nbsp;<input b:bind="phone.number" />&nbsp;&nbsp;
+					<a href="" b:onclick="{c.removePhone(curr_address, phone_index)}">delete</a>
+				</div>
+				<p><a b:onclick="{c.newPhone(curr_address)}" href="">Add Phone</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				   <a b:onclick="{c.popup=false}" href="">Done</a></p>
+			<div>
+		</div>			
+		<script type="text/javascript">
+			var bindster = new Bindster(model, "view", new Controller());
+		</script>
+	</body>
+</html>

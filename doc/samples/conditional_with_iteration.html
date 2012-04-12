@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Conditional Test</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script type="text/javascript" src="../../js/bindster.js"></script>
+		<script type="text/javascript">
+			var model = {
+				show: [{show: false},{show: false},{show: false},{show: false},{show: false},{show: false}],
+				iterate: [1],
+				count: 1
+			}
+		</script>
+	</head>
+	<body>
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		Count for iteration: <input b:bind="count" b:format="iterate=[];for (var ix = 0; ix < bindster_value; ++ix){iterate.push(ix+1)}" /><br />
+		<b:iterate on="show" with="decide" index="sx">
+			<input type="checkbox" b:bind="decide.show" b:truevalue="true" b:falsevalue="false" />show section <span b:bind="sx + 1"></span><br />
+		</b:iterate>
+		<b:iterate on="iterate" index="ix">
+			<b:if test="show[0].show" hide="visibility">
+				<h1>Section 1 - hide="visibility" </h1>
+				hide="visibility" takes space when hidden <br />
+				hide="visibility" takes space when hidden <br />
+				hide="visibility" takes space when hidden <br />
+				hide="visibility" takes space when hidden <br />
+				<a href="#" b:onclick="alert('clicked on visibility ' + ix  );">Test Events</a><br />
+			</b:if>
+			<b:if test="show[1].show" hide="display">
+				<h1>Section 2 - hide="display"</h1>
+				hide="display" takes no space when hidden <br />
+				hide="display" takes no space when hidden <br />
+				hide="display" takes no space when hidden <br />
+				hide="display" takes no space when hidden <br />
+				<a href="#" b:onclick="alert('clicked on display ' + ix  )">Test Events</a><br />
+			</b:if>
+			<b:if test="show[2].show" hide="remove">
+				<h1>Section 3 hide="remove"</h1>
+				hide="remove" will have remove textarea element <br />
+				hide="remove" will have remove textarea element <br />
+				hide="remove" will have remove textarea element <br />
+				hide="remove" will have remove textarea element <br />
+				<textarea>This is a text area.  Look for the count of text area elements at the top</textarea>
+				<a href="#" b:onclick="alert('clicked on remove ' + ix  )">Test Events</a><br />
+			</b:if>
+			<br />Number of text areas = <span b:bind="document.getElementsByTagName('textarea').length"></span><br />
+			<b:if test="show[3].show" hide="offscreen">
+				<div style="height: 32767px">
+					<h1>Section 4 - hide="offscreen"</h1>
+				</div>
+				You can see this text because it follow a big div element 32767 pixels high
+				<a href="#" b:onclick="alert('clicked on offscreen ' + ix  )">Test Events</a><br />
+			</b:if>
+			<div b:visibleif="show[4].show">
+				<h1>Section 5 - visibleif</h1>
+				hide="visibility" takes space when hidden <br />
+				hide="visibility" takes space when hidden <br />
+				hide="visibility" takes space when hidden <br />
+				hide="visibility" takes space when hidden <br />
+				<a href="#" b:onclick="alert('clicked on visibility ' + ix  )">Test Events</a><br />
+			</div>
+			<div b:showif="show[5].show">
+				<h1>Section 6 - showif</h1>
+				This takes none <br />
+				This takes none <br />
+				This takes none <br />
+				This takes none <br />
+				<a href="#" b:onclick="alert('clicked on display ' + ix  )">Test Events</a><br />
+			</div>
+		</b:iterate>
+		<script type="text/javascript">
+			var bindster = new Bindster(model);
+		</script>
+	</body>
+</html>
