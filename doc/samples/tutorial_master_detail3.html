@@ -26,7 +26,7 @@
 					this.model.addresses.push({name: "", email:"", street: "", city: "",
 						state: "", zip: "", phone_type: "", phone: "", ext: ""});
 					this.m.current_ax = this.m.addresses.length - 1;
-					this.m.current_address = this.m.addresses[this.m.current_ax]
+					this.m.edit_address = this.m.addresses[this.m.current_ax]
 					this.m.popup = true;
 				},
 				removeAddress: function (ax) {
@@ -40,7 +40,7 @@
 			<table>
 				<tbody>
 					<b:iterate on="addresses" index="ax" with="address">
-						<tr	b:class="{(current_ax == ax ? 'active' : '')}" b:onclick="{current_ax = ax;current_address = address}">
+						<tr	b:class="{(current_ax == ax ? 'active' : '')}">
 							<td>
 								<span b:bind="address.name"></span><br />
 								<span b:bind="address.phone"></span>
@@ -52,7 +52,7 @@
 								<span b:bind="address.state"></span>
 								<span b:bind="address.zip"></span>
 							</td>
-							<td><a b:onclick="{current_address = address;popup=true}" href="">Edit</a></td>
+							<td><a b:onclick="{edit_address = address;popup=true}" href="">Edit</a></td>
 							<td><a b:onclick="{c.removeAddress(ax)}" href="">Remove</a></td>
 						</tr>
 					</b:iterate>
@@ -61,12 +61,12 @@
 			<p><a b:onclick="{c.newAddress()}" href="">Add New Address</a></p>
 			<b:if test="popup">
 				<div class="popup" b:showif="{popup}" style="position: absolute; top: 16px; left: 16px">
-					First: &nbsp;&nbsp; <input b:focus="1" b:bind="current_address.name" />
-					Last: <input b:bind="current_address.email" /><br />
-					Street: <input b:bind="current_address.street" /><br>
-					City: &nbsp;&nbsp;&nbsp; <input b:bind="current_address.city" /> 
-					State: <input class="state" b:bind="current_address.state" />
-					Zip: <input class="zip" b:bind="current_address.zip" /><br />
+					First: &nbsp;&nbsp; <input b:focus="1" b:bind="edit_address.name" />
+					Last: <input b:bind="edit_address.email" /><br />
+					Street: <input b:bind="edit_address.street" /><br>
+					City: &nbsp;&nbsp;&nbsp; <input b:bind="edit_address.city" /> 
+					State: <input class="state" b:bind="edit_address.state" />
+					Zip: <input class="zip" b:bind="edit_address.zip" /><br />
 					<p><a b:onclick="{popup=false}" href="">Done</a></p>
 				<div>
 			</b:if>

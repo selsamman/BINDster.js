@@ -147,7 +147,7 @@
 			<script>formatJSFromTextArea("hello_world", 8, 12);</script>
 		</div>
 		<p>
-			Create your view.  This view has two elements each of which is bound the world property in the model. The immediate prameter forces the model to be updated 
+			Create your view.  This view has two elements, each of which is bound to the world property in the model. The immediate prameter forces the model to be updated 
 			immediatly (e.g. as you type) vs. when the input loses focus:
 		</p>
 		<div class="code">
@@ -168,6 +168,7 @@
 		<div class="code" b:showif="show['hw5']">
 			<script>formatJSFromTextArea("hello_world", 1, 1000);</script>
 		</div>
+		<p>For those that <a href="#page_reference_namespace">prefer not to introduce name spaces</a> all bindster attributes are also available using data-xxx where xxx is the specific bindster attribute.</p>
 
 	</div>
 	
@@ -205,6 +206,14 @@
 				</b:iterate>
 			</tbody>
 		</table>
+		<table>
+			<tbody>
+				<tr data-iterate-on="addresses" data-iterate-index="ax">
+					<td><input data-bind="addresses[ax].name" /></td>
+					<td><input data-bind="addresses[ax].email" /></td>
+				</tr>
+			</tbody>
+		</table>
 		<script>
 			var bindster = new Bindster(model);
 		</script>
@@ -222,6 +231,10 @@
 		</div>
 		<p>And the results look like this</P>
 		<iframe class="example" src="samples/tutorial_simple_iteration.html" style="width: 440px;height: 128px"></iframe>
+		<p>For those that <a href="#page_reference_namespace">prefer not to introduce name spaces</a> simply apply <strong>data-iterate-on</strong> and <strong>data-iterate-index</strong> directy on the <strong>&lt;tr&gt;</strong>:</p>
+		<div class="code">
+			<script>formatJSFromTextArea("simple_iteration", 28, 35);</script>
+		</div>
 	</div>
 
 <!-- - - - - - - - - - - - - - - -  Turtorial - Events   - - - - - - - - - - - - - - - - - - -->
@@ -285,7 +298,7 @@
 			<script>formatJSFromTextArea("simple_iteration_events", 15, 23);</script>
 		</div>
 		<p>The Controller class is where you put functions that can be referred to in event handlers.  When referencing data in the model you must refer to the model properties as  <strong>this.model.<i>propname</i></strong> or <strong>this.m.<i>propname</i></strong><p>
-		<p>The methods are called using attributes in the b namespace that correspond to the standard on events.  It is important to use the b namespace for these attributes so that BINDster can be sure to set the value of any variables that are set by iteration.  In this example ax.</p>
+		<p>The event tags must be prefixed with b: (or data-) so that BINDster has the opportunity to refresh the DOM after the event is processed.</p>
 		<div class="code">
 			<script>formatJSFromTextArea("simple_iteration_events", 28, 39);</script>
 		</div>
@@ -305,13 +318,14 @@
 
 <textarea id="master_detail" style="display: none">
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
 	<head>
 		<title>Bindster Simple Iteration</title>
 		<link type="text/css" rel="stylesheet" href="http://bindster.com/examples/css/site.css" media="all" />
-		<script src="../../js/bindster.js"></script>
-		<script>
+		<script type="text/javascript" src="../../js/bindster.js"></script>
+		<script type="text/javascript">
 			var model = {
 				addresses: [
 					{name: "Barack Obama", email:"prez@whitehouse.gov",
@@ -331,6 +345,7 @@
 					this.model.addresses.push({name: "", email:"", street: "", city: "",
 						state: "", zip: "", phone_type: "", phone: "", ext: ""});
 					this.m.current_ax = this.m.addresses.length - 1;
+					this.m.edit_address = this.m.addresses[this.m.current_ax]
 					this.m.popup = true;
 				},
 				removeAddress: function (ax) {
@@ -343,20 +358,20 @@
 		<div id="view" style="position: relative">
 			<table>
 				<tbody>
-					<b:iterate on="addresses" index="ax">
-						<tr	b:class="{(current_ax == ax ? 'active' : '')}" b:onclick="{current_ax = ax}">
+					<b:iterate on="addresses" index="ax" with="address">
+						<tr b:class="{(current_ax == ax ? 'active' : '')}">
 							<td>
-								<span b:bind="addresses[ax].name"></span><br />
-								<span b:bind="addresses[ax].phone"></span>
+								<span b:bind="address.name"></span><br />
+								<span b:bind="address.phone"></span>
 							</td>
 							<td>
-								<span b:bind="addresses[ax].email" /></span><br />
-								<span b:bind="addresses[ax].street"></span><br />
-								<span b:bind="addresses[ax].city"></span>
-								<span b:bind="addresses[ax].state"></span>
-								<span b:bind="addresses[ax].zip"></span>
+								<span b:bind="address.email" /></span><br />
+								<span b:bind="address.street"></span><br />
+								<span b:bind="address.city"></span>
+								<span b:bind="address.state"></span>
+								<span b:bind="address.zip"></span>
 							</td>
-							<td><a b:onclick="{current_ax = ax;popup=true}" href="">Edit</a></td>
+							<td><a b:onclick="{edit_address = address;popup=true}" href="">Edit</a></td>
 							<td><a b:onclick="{c.removeAddress(ax)}" href="">Remove</a></td>
 						</tr>
 					</b:iterate>
@@ -364,18 +379,18 @@
 			</table>
 			<p><a b:onclick="{c.newAddress()}" href="">Add New Address</a></p>
 			<b:if test="popup">
-				<div class="popup" style="position: absolute; top: 16px; left: 16px">
-					First: &nbsp;&nbsp; <input b:focus="1" b:bind="addresses[current_ax].name" />
-					Last: <input b:bind="addresses[current_ax].email" /><br />
-					Street: <input b:bind="addresses[current_ax].street" /><br>
-					City: &nbsp;&nbsp;&nbsp; <input b:bind="addresses[current_ax].city" /> 
-					State: <input class="state" b:bind="addresses[current_ax].state" />
-					Zip: <input class="zip" b:bind="addresses[current_ax].zip" /><br />
+				<div class="popup" b:showif="{popup}" style="position: absolute; top: 16px; left: 16px">
+					First: &nbsp;&nbsp; <input b:focus="1" b:bind="edit_address.name" />
+					Last: <input b:bind="edit_address.email" /><br />
+					Street: <input b:bind="edit_address.street" /><br>
+					City: &nbsp;&nbsp;&nbsp; <input b:bind="edit_address.city" /> 
+					State: <input class="state" b:bind="edit_address.state" />
+					Zip: <input class="zip" b:bind="edit_address.zip" /><br />
 					<p><a b:onclick="{popup=false}" href="">Done</a></p>
 				<div>
 			</b:if>
 		</div>			
-		<script>
+		<script type="text/javascript">
 			var bindster = new Bindster(model, "view", new Controller());
 		</script>
 	</body>
@@ -384,22 +399,26 @@
 
 		<p>BINDSter uses conditional constructs similar to those found in templating systems to control what is displayed.  The conditions are usually based on testing properties in the model that serve as states for the applications.
 		</p>
-		<p>We will extend the previous sample application to include a popup-up that allows the address to be edited.  This popup is only displayed when the popup property is true. The popup binds directly to the addresses array using a current index (current_ax).</p>
+		<p>We will extend the previous sample application to include a popup that allows the address to be edited.  This popup is only displayed when the popup property is true. The popup binds directly to a temporary reference to the current address.</p>
 		<div class="code">
-			<script>formatJSFromTextArea("master_detail", 60, 70);</script>
+			<script>formatJSFromTextArea("master_detail", 62, 72);</script>
 		</div>
 		<p>Our main iteration of the addresses has a couple of new elements</p>
 		<div class="code">
-			<script>formatJSFromTextArea("master_detail", 38, 58);</script>
+			<script>formatJSFromTextArea("master_detail", 40, 60);</script>
 		</div>
-		<p>On line 53 you see a link that sets popup to true and also sets the current index to the index used for the iteration.  BINDSter ensures that when events fire that the value of the index being iterated is set to the value of the particular row being iterated making this sort of pattern possible.</p>
-		<p>One other type of conditional expression is found on line 41.  Any HTML attribute can be prefixed with a b: and then a javascript expression may be used to get a value.  Here we are setting the class to 'active' when the current index is equal to the index being iterated.</p>
-		<p>Any variables being referred to in the BINDSter tags must be defined in the model.  popup and current_ax have been added:</P>
+		<p>First you can see that we introduced the <strong>b:with</strong> on the iteration.  This is simply a short cut for using indexes when referencing elements of an array being iterated.  On line 55 you see a link that sets popup to true and also sets the temporary current_address property.</p>
+		<p>One other type of conditional expression is found on line 43.  Any HTML attribute can be prefixed with a b: (or data-) and then a javascript expression may be embedded with {} to compute a value.  Here we are setting the class to 'active' when the current index is equal to the index being iterated.</p>
+		<p>Variables being referred to in the BINDSter tags must be defined in the model.  popup and current_ax have been added.  edit_address should probably also be added but we did not to illustrate that when using <strong>b:if</strong> the children are not present when the condition is false and so BINDster will not complain about not finding edit_address</P>
 		<div class="code">
 			<script>formatJSFromTextArea("master_detail", 9, 20);</script>
 		</div>
+		<p>Finaly some tweaks are needed to the controller to setup edit_address when a new address is added:<p>
+		<div class="code">
+			<script>formatJSFromTextArea("master_detail", 24, 35);</script>
+		</div>
 		<p>Here is what the application looks like:</p>
-		<iframe class="example" src="samples/tutorial_master_detail.html" style="width: 540px;height: 300px"></iframe>
+		<iframe class="example" src="samples/tutorial_master_detail3.html" style="width: 540px;height: 300px"></iframe>
 	</div>
 
 <!-- - - - - - - - - - - - - - - -  Tutorial - Goodies   - - - - - - - - - - - - - - - - - - -->
@@ -408,9 +427,9 @@
 	<div b:showif="page == 'tutorial_goodies'" class="right">
 		<h1>Other Goodies in BINDster</h1>
 		<h2>Custom Tags</h2>
-		<p>BINDSter lets you create your own <a href="#reference_mappers">custom tags</a> that effectively extend HTML.  You can define your own attributes and map them to an HTML template that will be substituted for the element using the custome tags.  This is equivalent to having HTML macros.
+		<p>BINDSter lets you <a href="#reference_mappers">map custom tags</a> that effectively extend HTML.  You can define your own attributes and map them to an HTML template that will be substituted for the element using the custome tags.  This is equivalent to having HTML macros.
 		<h2>Wrapping HTML</h2>
-		<p>You can define an <a href="#reference_wrappers">HTML template that will be used to wrap elements</a> defined using a selector expression.  For example you could define a "wrapper" that took all anchor elements and wrapped them in a structure that would create rounded corners</p>
+		<p>You can define an <a href="#reference_wrappers">HTML template that will be used to wrap elements</a> based on a selector expression.  For example you could define a "wrapper" that took all anchor elements and wrapped them in a structure that would create rounded corners</p>
 		<h2>Bookmarks and Back Button</h2>
 		<p>Single page applications need to support the back button and also to be able to define their state using unique URLs.  BINDster uses <a href="#reference_wrappers">hashmarks</a> to accomplish this.  Just define named anchors define what state properties are to be set when that anchor is linked to.  Then if all internal links in the application use the hash marks the back button will work properly.  This document is an example of navigating with hash marks.
 		<h2>Bind to Selects</h2>
@@ -418,7 +437,7 @@
 		<h2>Binding to Complex Controls</h2>
 		<p>A controler plug-in structure allows binding to complex UI controls such as sliders</p>
 		<h2>Formatting and Parsing</h2>
-		<p>Binding would not be very useful if there was no formatting or parsing.  <a href="#reference_filters">Formatters and parsers</a> can be used to translate data as it is marshalled back and forth between form fields and the model.<p>
+		<p>Binding would not be very useful if there was no formatting or parsing.  <a href="#reference_filters">Formatters and parsers</a> can be used to translate data as it is marshalled back and forth between form fields and the model.  This transforms the model from just being a view model into being a richer object model<p>
 		<h2>Error Handling</h2>
 		<p>You can ensure that your model never gets bad data through <a href="#reference_filters">parsing</a>.  BINDster is smart enough to keep a shadow copy of "bad" values so the user will always see the bad data until it is corrected but it is never marshalled into the model.
 		<h2>No Injection Risks</h2>
@@ -452,21 +471,24 @@
 			<div class="clear">&nbsp;</div>
 		</div>
 	</div>
-<!-- - - - - - - - - - - - - - - - -  Reference - Binding   - - - - - - - - - - - - - - - - - - -->
+<!-- - - - - - - - - - - - - - - - -  Reference - Namespaces - - - - - - - - - - - - - - - - - - -->
 
 	<a id="page_reference_namespace" b:onarrival="page= 'reference_namespace'" ></a>
 	<div b:showif="page == 'reference_namespace'" class="right">
 		<h1>Namespaces and data-xxx</h1>
-		<p>BINDster's preferred method of declaring binding is to use namespaces for BINDSter specific tags and attributes.  HTML 5 does not specifically support namespaces but tollerates them mainly for the benefit of popular namespaces such as SVG and MathML. All modern browsers tollerate them for this reason and also because Facebook uses it's own name space for XFBML.  However, other binding frameworks have chosen to use the data-xxx attributes of HTML and this method is fully supported by BINDSter as well.  To use the data-xxx style do the following:</p>
+		<p>BINDster's preferred method of declaring binding is to use namespaces for BINDSter specific tags and attributes.  HTML 5 does not specifically support namespaces but tollerates them mainly for the benefit of popular namespaces such as SVG and MathML. All modern browsers tollerate them for this reason and also because Facebook uses it's own name space for XFBML.  However, other binding frameworks have chosen to use the data-xxx attributes of HTML 5 and this method is fully supported by BINDSter as well.  To use the data-xxx style do the following:</p>
 		<ul>
 			<li>Use <strong>data-</strong> in place of <strong>b:</strong> on all bindster related attributes</li>
-			<li>Replace BINDSter-specific tags with <strong>&lt;div data-xxx-yyy="attribute value" ...&gt; . . . &lt;/div&gt;</strong> where xxx is the tag name and yyy is the attribute name</li>
+			<li>Other than <a href="#reference_mappers">mappers</a> there is no special handling for bindster specific tags.  BINDster just prefixes every attribute with the tag name and the processing is actually done based on the attributes rather than the tag.  So rather than using <strong>&lt;b:iterate on="addresses" index="ax"&gt</strong> you can simply apply <strong>data-iterate-on</strong> and <strong>data-iterate-index</strong> to the container you wish to iterate</li> 
+			<li>You can also replace BINDSter-specific tags with <strong>&lt;div data-xxx-yyy="attribute value" ...&gt; . . . &lt;/div&gt;</strong> where xxx is the tag name and yyy is the attribute name</li>
 		</ul>
-		<p>We feel that that the use of namespaces makes the HTML very clear and given the fact that this works with all modern browsers we feel it is worthwhile.  However one should still be aware of several issues with using the namespace approach</p>
+		<p>We feel that that the use of namespaces makes the HTML very clear and given the fact that this works with all modern browsers we feel it is worthwhile. Still it is your code and you need to decide which way is best of your project.   If you use namespaces you should be aware of several issues:</p>
 		<ul>
-			<li>Your HTML will not validate as is.  If you absolutely must have HTML that can be validated by a 3rd party then you should not use this method.  If you view validation as something that will help you catch errors we provide a handy service that translates your HTML to the data-xxxx style which can and will validate - <a href="http://bindster.com/cgi-bin/tohmtl5"> http://bindster.com/cgi-bin/tohmtl5 </a>.  This can be used to prefix your URLs to check to quickly see whether they would validate when translated to the data-xxxx style.</li>
+			<li>Don't forget to declare the namespace or your code will not work with IE 8:<br />
+			&lt;html xmlns="http://www.w3.org/1999/xhtml" <strong>xmlns:b="http://bindster.com"</strong>  xml:lang="en" lang="en"&gt;</li>
+			<li>Your HTML will not validate since no validators support this feature.  If you absolutely must have HTML that can be validated by a 3rd party then you should not use this method.  If you view validation as something that will help you catch errors we provide a handy service that translates your HTML to the data-xxxx style which can and will validate - <a href="http://bindster.com/cgi-bin/tohmtl5"> http://bindster.com/cgi-bin/tohmtl5 </a>.  This can be used to prefix your URLs to check to quickly see whether they would validate when translated to the data-xxxx style.</li>
 			<li>At some point in the future there could be the possiblity that a browser does not properly support namespaces or that the W3C will take a tougher stance against them.  In that case you can easily convert to the data-xxx style using the handy translation service mentioned above</li>
-		<ul>
+		</ul>
 		<p>Additionally all binding information can be specified by code in the controller and/or in the model.  We don't like to prescribe any particular design pattern on you and in fact go out of our way to be flexible in terms of specifying binding information in the model, view and controller.</p>
 	</div>
 <!-- - - - - - - - - - - - - - - - -  Reference - Binding   - - - - - - - - - - - - - - - - - - -->
@@ -474,9 +496,9 @@
 	<a id="page_reference_binding" b:onarrival="page= 'reference_binding'" ></a>
 	<div b:showif="page == 'reference_binding'" class="right">
 		<h1>Binding</h1>
-		<p>Binding connects data to a form field or other DOM element.  The connection can be single directional which simply evaluates and expression and populates the value of a an element with the result of an expression or it can be bi-directional such that it links a form field with Javascript variable or propery.</p>
+		<p>Binding connects data to a form field or other DOM element.  The connection can be single directional which simply evaluates an expression and populates the value of a DOM element with the result of an expression or it can be bi-directional such that it links a form field with JavaScript variable or propery.</p>
 		<h2>The b:bind Attribute</h2>
-		<p>The <strong>b:bind</strong> attribute contains a Javascript expression the result of which will be used to set the value of the element containing the attribute.  If the expression is not a string constant (e.g. does not begin with a quote) and the element containing the attribute is a form field then the binding is bi-directional.  In that case the bind expression is used to create an expression that can update a property or Javascript variable.  Bi-directional binding can be performed on these types of form fields:</p>
+		<p>The <strong>b:bind</strong> attribute contains a Javascript expression the result of which will be used to set the value of the element containing the attribute.  If the expression is not a string constant (e.g. does not begin with a quote) and the element containing the attribute is a form field then the binding is bi-directional.  In that case BINDster will create an event that can update a property or JavaScript variable.  Anytime an event is processed BINDster checks to see if the model is still in sync with the DOM and will update the DOM if needed.  Bi-directional binding can be performed on these types of form fields:</p>
 		<ul>
 			<li><strong>&lt;input type="text" b:bind="customer.name" &gt;&lt;/input&gt;</strong></li>
 			<li><strong>&lt;input type="password" b:bind="authentication.verifyPassword" &gt;&lt;/input&gt;</strong></li>
@@ -491,10 +513,11 @@
 			<li><strong>&lt;li b:bind="element[ix].content" &gt;&lt;/li&gt;</strong></li>
 		</ul>
 		<h2>How expressions are evaluted</h2>
-		<p><strong>b:bind</strong> expressions are evaluated in the context of the model such that any properties of the model can be referred to without qualification. They are also evaluated with values for <strong>b:index</strong> and <strong>b:with</strong> set for the current row of iteration.</p>
+		<p><strong>b:bind</strong> expressions are evaluated in the context of the model, the controller and the global scope in that order.  This means properties in the model need no qualification.  Sometimes people prefer to put variables that are really releated to rendering (e.g. indexes, states etc) in the controller.  You can put variables in the controller by simply declaring them in the controller and not in the model or you can explicityly qualify them by prefixing them with c. or controller.
 		<h2>When is data updated?</h2>
-		<p>The update expression is executed from events in the element containing the bind attribute.  The event depends on the type of element and on whether the <strong>b:when</strong> attribute is also present. In general updates occur when the form element loses focus, it's value is changed by clicking on it (radio buttons and checkboxes) or when it's value is changed by dropping down and selecting a value (select drop-downs).  In the case of input text and password fields <strong>b:when</strong> can be used to specify the number seconds the field will be polled for a change in value.  This allows data to be updated as it is typed.</p>
-		<p>The entire view is traversed everytime there is an event that could potentially change data in the model.  As the view is traversed a cached value of the DOM element is compared with result of evaluating the bind expression and if there is a change the DOM element is updated.  This provides adaquate speed such that the developper never needs to explicitly force the updating of the DOM when bound elements change.</p>
+		<p>The update expression is executed from events in the element containing the bind attribute.  The event depends on the type of element and on whether the <strong>b:when</strong> attribute is also present. In general updates occur when the form element loses focus, it's value is changed by clicking on it (radio buttons and checkboxes) or when it's value is changed by dropping down and selecting a value (select drop-downs).  In the case of input text and password fields <strong>b:when</strong> can be used to specify the number milliseconds before BINDster will decide to pass through the DOM and determine whether updates need to be made.</p>
+		<p>The entire view is traversed everytime there is an event that could potentially change data in the model.  As the view is traversed a cached value of the DOM element is compared with result of evaluating the bind expression and if there is a change the DOM element is updated.  This provides adaquate speed such that the developer never needs to explicitly force the updating of the DOM when bound elements change.</p>
+		<p>There are times when the model may change other than as a result of binding.  For example when server requests are made or when web workers complete a task.  In that case the controller has a mehod injected called <strong>refresh</strong> which will schedule a resync of the DOM and the model.
 		<h2>Binding to &lt;select&gt;</h2>
 		<p>When binding to selects these attributes are used:</p>
 		<ul>
@@ -513,6 +536,7 @@
 		<ul>
 			<li><strong>b:truevalue</strong> the value when the box is checked
 		</ul>
+		<p>As with all radio buttons the name attribute makes them into a group</p>
 	</div>
 
 <!-- - - - - - - - - - - - - - - - - -  Reference - Iteration   - - - - - - - - - - - - - - - - - - -->
@@ -588,7 +612,7 @@
 			<li>You must use b: in front of any events that will rely on <strong>b:with</strong> or <strong>b:index</strong> or require that the array be re-iterated an the completion of the event processing as is the case on the remove link on line 29.</li>
 		</ul>
 		<p>Here is the working example:</p>
-		<iframe class="example" src="samples/reference_iteration.html" style="width: 540px;height: 160px"></iframe>
+		<iframe class="example" src="samples/reference_iteration.html" style="width: 540px;height: 600px"></iframe>
 		<p>The <strong>b:iterate</strong> is provided for convenience.  Whenever you use a tag in the BINDster namespace, the attributes of the tag are prefixed with the name of the tag.  So the real attribute names for the iteration attributes are <strong>b:iterateon, b:iteratewith, b:interateindex, b:interatecounter, b:iteratefilter</strong>.   You can apply iteration to any element by using the real attribute names</p>
 	</div>
 	
