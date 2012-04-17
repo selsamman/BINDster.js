@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bindster Form Example</title>
+	<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+	<style>
+		.pledges {width: 600px}
+		.fieldLabel {float: left; width: 160px; text-align: right;padding: 6px;height: 20px; }
+		.fieldInput {float: left; width: 200px; height: 20px}
+		.field {clear: both; padding: 6px}
+		.clear {clear: both; height: 0px; display: block; overflow: hidden}
+		.fieldError {color: red; margin-left: 16px;padding:3px}
+	</style>
+	<script type="text/javascript" src="../../js/bindster_daily.js"></script>
+	<script type="text/javascript">
+
+		//	--------------------------- Base Controller ----------------------------------
+
+		function Controller() {};
+		Controller.prototype = {
+
+			// Validators
+			isName: function () {this.doesMatch("[^0-9A-Za-z \']", "name")},
+			isEmail: function () {this.doesMatch("^[^\@ ]+\@[^\@ \.]+\.[^\@ ]+", "email")},
+			isNumeric: function () {this.doesMatch("[^0-9]", "numeric")},
+			isNumeric: function () {this.doesMatch("[^0-9A-Za-z]", "alphanumeric")},
+			isPhone: function () {this.doesMatch("[^0-9 \(\)-]", "phone")},
+			notEmpty: function() {
+				if (!this.value || this.value.length == 0) {
+					throw {message: "required"};
+				}
+			},
+			isMinLength: function(len) {
+				if (this.isEmpty() || this.value.length < len) 
+					throw {message: "minlength", minlength: len}
+			},
+			isMaxlength: function(len) {
+				if (this.isEmpty || this.value.length > len) 
+					throw {message: "maxlength", maxlength: len}
+			},
+			isEmpty: function(value) {
+				return this.value == null || this.value.length == 0
+			},
+			
+			// Parsers
+			parseCurrency: function() {
+				if (!this.value) return this.value;
+				var n = this.value;
+				n = n.replace(/[^0-9\.\-]/g, "");
+				var f = parseFloat(n);
+				if (isNaN(f))
+					throw {message: "currency"};
+				var result = Math.floor(f * 100 + .5) / 100;
+				return result;
+			},
+			parseDate: function() {
+				if (this.value == null || this.value.length == "") return null;
+				var parsed = Date.parse(this.value);
+				if (isNaN(parsed)) {
+					throw {message: "date"}
+				}
+				return new Date(parsed);
+			},
+			
+			// Formatters	
+			formatDate: function()	{
+				if (!this.value) return this.value;
+				var date = this.value;
+				return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+			},
+			formatCurrency: function(prependSymbol) {
+				if(!this.value) return "";
+				prependSymbol = (prependSymbol ? prependSymbol : "$") + " ";
+				var n = Math.round(this.value) + "";
+				n = n.replace(/\.([0-9])$/, ".$10");
+				return prependSymbol + this.addCommas(n);
+			},
+	
+			// Utility
+			addCommas: function (nStr)	{
+				nStr += '';
+				x = nStr.split('.');
+				x1 = x[0];
+				x2 = x.length > 1 ? '.' + x[1] : '';
+				var rgx = /(\d+)(\d{3})/;
+				while (rgx.test(x1)) {
+					x1 = x1.replace(rgx, '$1' + ',' + '$2');
+				}
+				return x1 + x2;
+			},
+			doesMatch: function(regex, error) {
+				if (this.value != null && this.value.length > 0 && !(this.value + "").match(regex))
+					throw error ? {message: error} : " Incorrect Format";
+			},
+
+		}
+	
+		//	------------------------------------- Object Model ----------------------------------
+
+		function Person () {}
+		Person.prototype.__props__ = function () {
+			return {
+				email:		{type: String, length: 5, rule: ["text", "email", "required"]},
+				firstName:	{type: String, length: 40, rule: ["name", "required"]},
+				middleName: {type: String, length: 40, rule: "name"},
+				lastName:	{type: String, length: 40, rule: ["name", "required"]},
+				pledges:	{type: Array, of: Pledge} 
+			}
+		};
+		Person.prototype.validate = function() {
+			if (this.totalPledges() > 1000)
+				throw {message: "Pledges must total less than $1000", code: "maxpledge", max: "$1000"}
+		};
+		Person.prototype.totalPledges = function() {
+			var total = 0
+			for (var ix = 0; ix < this.pledges.length; ++ix)
+				total += this.pledges[ix].amount;
+			return total;
+		};
+
+		function Pledge() {}
+		Pledge.prototype.__props__ = function () {
+			return {
+				date:		{type: Date, rule: ["date", "required"], 
+								value: new Date((new Date()).toLocaleDateString()), validate: this.validateDateNotInPast},
+				amount:		{type: Number, rule: ["currency", "required"], value: 25, 
+								validate: this.validateMinimumPledge}
+			};
+		};
+		Pledge.prototype.validateMinimumPledge = function() {
+			if (this.value < 25)
+				throw {message: "Amount must be at least $25", code: "minimum", value: "$25"}
+		} 
+		Pledge.prototype.validateDateNotInPast =  function() {
+			if (this.value.getTime() < (new Date((new Date()).toLocaleDateString())).getTime())
+				throw {message: "Date cannot be in the past", code:"pastdate"}
+		}
+		var model = {
+			person: Bindster.fromPOJO({}, Person),
+			verifyEmail: ""
+		};
+
+	// -------------------------------------------- Controller Specifics -----------------------------------------
+
+		Controller.prototype.preRenderInitialize = function () {
+
+			this.attr("=verifyEmail", {validate: this.notEmpty})
+		
+			this.rule("date", {parse: this.parseDate, format: this.formatDate});
+			this.rule("currency", {parse: this.parseCurrency, format: this.formatCurrency, maxlength: 50});
+			this.rule("required", {validate: this.notEmpty});
+			this.rule("text", {maxlength: "{prop.length}"});
+
+			// Actions
+			this.attr("#submit", "onclick", function () {
+				this.validate(); // controller validation
+				this.model.person.validate(); // model validation
+				// non-field controller validation
+				if (this.model.person.email != this.model.verifyEmail)
+					this.setError(this.model, "verifyEmail", {message: "nomatch"});
+				if (!this.hasErrors())
+					alert("Form OK: " + JSON.stringify(this.model.person));
+			});
+			this.addPledge();
+		};
+		Controller.prototype.addPledge = function() {
+			this.model.person.pledges.push(Bindster.fromPOJO({}, Pledge));
+		}
+		Controller.prototype.removePledge = function(ix) {
+			this.model.person.pledges.splice(ix, 1);
+		}
+		Controller.prototype.onchange = function () {
+			try {
+				this.model.person.validate();
+			} catch (e) {
+				this.setError("error", e);
+			}
+		}
+	</script>
+</head>
+<body>
+	<!--#include virtual="mappers.xml" -->
+
+	<!--------------------------------------------- Error Message Definitions ----------------------------------->
+
+	<b:message name="nomatch" b:value="{field} must match" ></b:message>
+	<b:message name="email" b:value="{field} must be a valid email address" ></b:message>
+	<b:message name="date" b:value="{field} must be a valid date in the form mm-dd-yyyy" ></b:message>
+	<b:message name="number" b:value="{field} must be numeric" ></b:message>
+	<b:message name="currency" b:value="{field} must be in dollars" ></b:message>
+	<b:message name="required" b:value="Please fill in your {field}" ></b:message>
+
+	<!------------------------------------------- Input Form ---------------------------------------------------->
+
+
+	<div class="pledges">
+		<h1>Pledge Input Form</h1>
+		<fieldset class="pledgeForm">
+			<b:textinput b:bind="person.email" b:label="EMail Address"></b:textinput>
+			<b:textinput b:bind="verifyEmail" b:label="Verify Email Address"></b:textinput>
+			<b:textinput b:bind="person.firstName" b:label="First Name"></b:textinput>
+			<b:textinput b:bind="person.middleName" b:label="Middle Name"></b:textinput>
+			<b:textinput b:bind="person.lastName" b:label="Last Name"></b:textinput>
+			<h2>Pledges</h2>
+			<fieldset>
+				<div b:iterate-on="person.pledges" b:iterate-with="pledge" b:iterate-index="ix">
+					<b:textinput b:bind="pledge.date" b:label="Date of Pledge"></b:textinput>
+					<b:textinput b:bind="pledge.amount" b:label="Amount"></b:textinput>
+					<a href="#" b:onclick="removePledge(ix)">Remove Pledge</a>
+				</div>
+			</fieldset>
+			<a href="#" b:onclick="addPledge()">Add a Pledge</a>
+		</fieldset>
+		<div b:bind-error="error"></div>
+		<a href="#" id="#submit">Submit Pledges</a>
+	</div>
+
+	<script type="text/javascript">
+
+		var bindster = new Bindster(model, null, new Controller());
+	
+	</script>
+
+</body>
+</html>
