@@ -12,7 +12,7 @@
 		.clear {clear: both; height: 0px; display: block; overflow: hidden}
 		.fieldError {color: red; margin-left: 16px;padding:3px}
 	</style>
-	<script type="text/javascript" src="../../js/bindster_daily.js"></script>
+	<script type="text/javascript" src="../../js/bindster.js"></script>
 	<script type="text/javascript">
 
 		//	--------------------------- Base Controller ----------------------------------
@@ -101,7 +101,7 @@
 		function Person () {}
 		Person.prototype.__props__ = function () {
 			return {
-				email:		{type: String, length: 5, rule: ["text", "email", "required"]},
+				email:		{type: String, length: 50, rule: ["text", "email", "required"]},
 				firstName:	{type: String, length: 40, rule: ["name", "required"]},
 				middleName: {type: String, length: 40, rule: "name"},
 				lastName:	{type: String, length: 40, rule: ["name", "required"]},
@@ -147,6 +147,7 @@
 
 			this.attr("=verifyEmail", {validate: this.notEmpty})
 		
+			this.rule("email", {validate: this.isEmail});
 			this.rule("date", {parse: this.parseDate, format: this.formatDate});
 			this.rule("currency", {parse: this.parseCurrency, format: this.formatCurrency, maxlength: 50});
 			this.rule("required", {validate: this.notEmpty});
@@ -180,9 +181,38 @@
 	</script>
 </head>
 <body>
-	<!--#include virtual="mappers.xml" -->
+<!-----------------------------  Mappers ------------------------------->
+<b:mapper tag="textinput">
+	<div class="field inputField"> 
+		<label class="fieldLabel" b:bind="'__label__' + ':'"></label>
+		<input type="text" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__" b:maxlength="__maxlength__" b:focus="1" />
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
 
-	<!--------------------------------------------- Error Message Definitions ----------------------------------->
+<b:mapper tag="select">
+	<div class="field selectField"> 
+		<label class="fieldLabel" b:bind="'__label__' + ':'"></label>
+		<select b:bind="__bind__" b:validate="__validate__" b:fill="__fill__" b:using="__using__"></select>
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
+
+
+<b:mapper tag="checkbox">
+	<div class="field checkBox"> 
+		<input type="checkbox" b:bind="__bind__" b:truevalue="__truevalue__" b:falsevalue="__falsevalue__" />
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
+
+<b:mapper tag="radio">
+	<div class="field radioButton"> 
+		<input type="radio" b:bind="__bind__" b:truevalue="__truevalue__" />
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
+	<!------------ ------- Error Message Definitions ----------------------------------->
 
 	<b:message name="nomatch" b:value="{field} must match" ></b:message>
 	<b:message name="email" b:value="{field} must be a valid email address" ></b:message>
