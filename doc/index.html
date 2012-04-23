@@ -1295,11 +1295,11 @@ MyController.prototype.formatDate = function {
 		function Person () {}
 		Person.prototype.__props__ = function () {
 			return {
-				email:		{type: String, length: 5, rule: ["text", "email", "required"]},
-				firstName:	{type: String, length: 40, rule: ["name", "required"]},
+				email: {type: String, length: 5, rule: ["text", "email", "required"]},
+				firstName: {type: String, length: 40, rule: ["name", "required"]},
 				middleName: {type: String, length: 40, rule: "name"},
-				lastName:	{type: String, length: 40, rule: ["name", "required"]},
-				pledges:	{type: Array, of: Pledge} 
+				lastName: {type: String, length: 40, rule: ["name", "required"]},
+				pledges: {type: Array, of: Pledge} 
 			}
 		};
 		Person.prototype.validate = function() {
@@ -1374,7 +1374,37 @@ MyController.prototype.formatDate = function {
 	</script>
 </head>
 <body>
-	<!--#include virtual="mappers.xml" -->
+<!-----------------------------  Mappers ------------------------------->
+<b:mapper tag="textinput">
+	<div class="field inputField"> 
+		<label class="fieldLabel" b:bind="'__label__' + ':'"></label>
+		<input type="text" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__" b:maxlength="__maxlength__" b:focus="1" />
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
+
+<b:mapper tag="select">
+	<div class="field selectField"> 
+		<label class="fieldLabel" b:bind="'__label__' + ':'"></label>
+		<select b:bind="__bind__" b:validate="__validate__" b:fill="__fill__" b:using="__using__"></select>
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
+
+
+<b:mapper tag="checkbox">
+	<div class="field checkBox"> 
+		<input type="checkbox" b:bind="__bind__" b:truevalue="__truevalue__" b:falsevalue="__falsevalue__" />
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
+
+<b:mapper tag="radio">
+	<div class="field radioButton"> 
+		<input type="radio" b:bind="__bind__" b:truevalue="__truevalue__" />
+		<div class="error fieldError" b:show-if="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+	</div>
+</b:mapper>
 
 	<!--------------------------------------------- Error Message Definitions ----------------------------------->
 
@@ -1419,11 +1449,64 @@ MyController.prototype.formatDate = function {
 </body>
 </html>
 </textarea>
-		<p>BINDster also allows supports rich object models where you can specify validation in the object model itself and it support binding from within the controller.  This example shows this and will be explained in the next release push of the documentation.
+		<p>One of the principal design philosopies of BINDster is that it should support rich object modes rather than simply a view model.  This principal is supported by a validation framework that keep bad data out of the model and by the ability to incorporate validation into the model in a way that can be reflected in the UI.<p>
+		<p>BINDSter also strives to be pattern agonostic and provide flexibility in terms of where you supply binding criteria so that it will fit best with your own patterns. Binding can be specified in:</p>
+		<ul>
+			<li><strong>The controller</strong> - Since the binding attributes are atomic rather than being decarative there is a simple programatic mapping of BINDster attributes to DOM elements using selectors.</li>
+			<li><strong>The model</strong> - Aspects of binding such as validation and in some instances formatting may rightly belong in the model.  These BINDSter attributes may be supplied directly in the model or mapped indirectly through the use of "rules" which can be thought of as data "classes".</li>
+		</ul>
+		<h2>Binding in the Controller</h2>
+		<p>In the <strong>preRenderInitialize</strong> of your controller you may call the attr method to assign any BINDster attribute to a DOM element using a selector:
+		</p>
+		<ul style="list-style-type: none">
+			<li><strong>this.attr(selector, attribute, value)</strong> or </li>
+			<li><strong>this.attr(selector, {attribute: value ...})</strong></li>
+		</ul>
+		<p>where ...</p>
+		<ul style="list-style-type: none">
+			<li><strong>selector</strong> is A CSS selector that specifies the DOM element</li>
+			<li><strong>attribute</strong> is the BINDster attributes as defined here in the docs</li>
+			<li><strong>value</strong> ia the value for BINDster attribute but with some some additional conveniences:
+				<ul>
+					<li>For formatters, parsers, validators and events you may specify an actual function rather than a string to be evaluated</li>
+					<li>In attributes that have multiple values such as validators you may specify an array of values (which may be functions or string expressions to be evaluated)</li>
+				</ul>
+			</li>
+		</ul>
+		<p>Here is an onclick event defined within the controller for a button with an id of "submit"</p>
 		<div class="code">
-			<script>formatJSFromTextArea("reference_object_model");</script>
+			<script>formatJSFromTextArea("reference_object_model", 156, 164);</script>
 		</div>
-			
+			<p>Attribute selectors have one additional feature which is that they can select DOM objects that are bound to a particular property.  This lets you specify only the data binding in the view and have it double as identifier by which other more verbose binding attributes (e.g. formatters, validators, parsers) and be assigned. Here is an input field defined using a mapper that is bound to verifyEmail:</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_object_model", 201, 201);</script>
+		</div>
+		<p>and here is the validator defined within the controller</p>
+		<div class="code">
+			<script>formatJSFromTextArea("reference_object_model", 148, 148);</script>
+		</div>
+			<h2>Binding in the Object Model</h2>
+		<p>Defining binding attributes in the object model is done by injecting attribute information into the objects by way of the the __props__ function.  It can be provided in a prototye or directly as a property if using prototypical object styles.</p>
+		<p>The __props__ function returns an array of properties each of which may specify bindster attributes that will apply when that property is bound.  The attributes may be assigned directly or indirectly by specifying a rule.  BINDster attributes may be assigned to rules so that all properties that share the same characteristics (e.g. currency or dates) can have validators, parsers and formatters assigned once. </p>
+		<p>Consider the __props__ definition for a Pledge object:</p>	
+		<div class="code">
+			<script>formatJSFromTextArea("reference_object_model", 102, 110);</script>
+		</div>
+		<ul>
+			<li><strong>type</strong> is only useful in conjunction with the fromPOJO staitic BINDSter method which can construct rich object graphs from POJOs.  More about this later</li>
+			<li><strong>length</strong>is an example of mapping constraints back to the user interface. Lenght will be used by the implementation of the "text" rule</li>
+			<li><strong>rule</strong> an array of rules which must be defined in the controller</li>
+		</ul>
+		<p>In the <strong>preRenderInitialize</strong> method of the controller in this example we define the rules:</p> 
+		<div class="code">
+			<script>formatJSFromTextArea("reference_object_model", 150, 153);</script>
+		</div>
+		<p>Here we see formatters and parsers being defined for the various rules.  Note that the <strong>text</strong> rule defines a standard DOM attribute <strong>maxlength</strong> which will force the UI to limit the length of an input field.  As with any normal DOM attribute defined via BINDster (e.g. b:maxlength) you can use a JavaScript expression.  The <strong>prop</strong> is injected into the scope of evaluation and <strong>prop</strong> is a reference to the <strong>__props__</strong> definition for the particular attribute so that props.length will represent the length that was defined in the object model.</p>
+		<p>	See the <strong>reference_forms_object.html</strong> for the complete example show here</p>
+		<h2>Rich Object Models and AJAX</h2>
+		<p>Using rich object models in the browser when much of the data comes from the server can require a lot of glue code.  BINDster provides a method to take POJO objects that may be be retrieved from AJAX requests and "enrich" them by instantiating objects for them.  It can handle references to other objects and arrays of other objects. It is used like this:<br /><br />
+		<strong>&nbsp;&nbsp;&nbsp;var person = Bindster.fromPOJO(JSON.parse(data.person), Person)</strong>
+		</p>
 	</div>
 	
 	<a id="page_reference_focus" b:onarrival="page= 'reference_focus'" ></a>
