@@ -1,0 +1,37 @@
+<h1>Binding</h1>
+<p>Binding connects data to a form field or other DOM element.  The connection can be single directional which simply evaluates an expression and populates the value of a DOM element with the result of an expression or it can be bi-directional such that it links a form field with JavaScript variable or propery.</p>
+<h2>The b:bind Attribute</h2>
+<p>The <strong>b:bind</strong> attribute contains a Javascript expression the result of which will be used to set the value of the element containing the attribute.  If the expression is not a string constant (e.g. does not begin with a quote) and the element containing the attribute is a form field then the binding is bi-directional.  In that case BINDster will create an event that can update a property or JavaScript variable.  Anytime an event is processed BINDster checks to see if the model is still in sync with the DOM and will update the DOM if needed.  Bi-directional binding can be performed on these types of form fields:</p>
+<ul>
+	<li><strong>&lt;input type="text" b:bind="customer.name" &gt;&lt;/input&gt;</strong></li>
+	<li><strong>&lt;input type="password" b:bind="authentication.verifyPassword" &gt;&lt;/input&gt;</strong></li>
+	<li><strong>&lt;input type="radio" name="cardtype" b:bind="card.type" b:truevalue="'Visa'" &gt;&lt;/input&gt;</strong></li>
+	<li><strong>&lt;input type="checkbox" b:bind="agreeded" b:truevalue="'yes'" b:falsevalue= "'no'" &gt;&lt;/input&gt;</strong></li>
+	<li><strong>&lt;select b:bind="state" b:fill="states" &gt;&lt;/select &gt;</strong><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See <a href="#page_reference_binding_selects">Binding Selects</a> to see all the attributes for selects
+	</li>
+	<li><strong>&lt;textarea b:bind="comment" &gt;&lt;/textarea &gt;</strong></li>
+</ul>
+<p>All other elements have single directional binding.  This also means that they can use expressions</p>
+<ul>
+	<li><strong>&lt;span b:bind="gross - net" &gt;&lt;/span&gt;</strong>;</li>
+	<li><strong>&lt;li b:bind="element[ix].content" &gt;&lt;/li&gt;</strong></li>
+</ul>
+<h2>How expressions are evaluted</h2>
+<p><strong>b:bind</strong> expressions are evaluated in the context of the model, the controller and the global scope in that order.  This means properties in the model need no qualification.  Sometimes people prefer to put variables that are really releated to rendering (e.g. indexes, states etc) in the controller.  You can put variables in the controller by simply declaring them in the controller and not in the model or you can explicityly qualify them by prefixing them with c. or controller.
+<h2>When is data updated?</h2>
+<p>The update expression is executed from events in the element containing the bind attribute.  The event depends on the type of element and on whether the <strong>b:when</strong> attribute is also present. In general updates occur when the form element loses focus, it's value is changed by clicking on it (radio buttons and checkboxes) or when it's value is changed by dropping down and selecting a value (select drop-downs).  In the case of input text and password fields <strong>b:when</strong> can be used to specify the number milliseconds before BINDster will decide to pass through the DOM and determine whether updates need to be made.</p>
+<p>The entire view is traversed everytime there is an event that could potentially change data in the model.  As the view is traversed a cached value of the DOM element is compared with result of evaluating the bind expression and if there is a change the DOM element is updated.  This provides adaquate speed such that the developer never needs to explicitly force the updating of the DOM when bound elements change.</p>
+<p>There are times when the model may change other than as a result of binding.  For example when server requests are made or when web workers complete a task.  In that case the controller has a mehod injected called <strong>refresh</strong> which will schedule a resync of the DOM and the model.
+<h2>Binding to checkboxes</h2>
+<p>When binding to a check box you need to specify the values when the box is checked or unchecked</p>
+<ul>
+	<li><strong>b:truevalue</strong> the value when the box is checked
+	<li><strong>b:falsevalue</strong> the value when the box is unchecked
+</ul>
+<h2>Binding to radio buttons</h2>
+<p>When binding to a set of radio buttons you need to specify the value that determines whether the ratio button is checked.</p>
+<ul>
+	<li><strong>b:truevalue</strong> the value when the box is checked
+</ul>
+<p>As with all radio buttons the name attribute makes them into a group</p>

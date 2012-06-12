@@ -1,0 +1,45 @@
+<b:mapper tag="mybutton">
+	<a class="graphicButton" href="#" b:onclick="__onclick__" id="__id__">
+		<span class="leftEnd"></span>
+		<span class="middle" b:bind="'__text__'"></span>
+		<span class="rightEnd"></span>
+	</a>
+</b:mapper>
+
+<b:mybutton onclick="doSomething()" text="Open Account"></b:mybutton>
+
+<b:mapper tag="formfield">
+	<dl b:class="__class__">
+		<dt>
+			<label class="fieldLabel" for="{'__bind__'.replace(/\./, '__')}" b:bind="'__label__' + ':'" b:showif="'__label__'"></label>
+		</dt>
+		<dd>
+			<b:if test="'__type__' == 'text'">
+				<input b:name="__bind__"  b:id="__bind__" type="text" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__" b:focus="__focus__" b:onenter="__onenter__" b:size="__size__" b:maxlength="__maxlength__" onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+			</b:if>
+			<b:if test="'__type__' == 'password'">
+				<input b:name="__bind__" b:id="__bind__" type="password" b:bind="__bind__" b:validate="__validate__" b:parse="__parse__" b:format="__format__"  b:focus="__focus__" b:onenter="__onenter__" b:size="__size__" b:maxlength="__maxlength__" onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+			</b:if>
+			<b:if test="'__type__' == 'select'">
+				<select b:name="__bind__" b:id="__bind__" type="password" b:bind="__bind__" b:validate="__validate__" b:fill="__fill__" b:using="__using__" b:focus="__focus__" b:onenter="__onenter__" onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')"></select>
+			</b:if>
+			<b:if test="'__type__' == 'radio'">
+				<input b:name="__bind__" type="radio" b:truevalue="__truevalue__" b:id="__bind__" type="text" b:bind="__bind__" b:validate="__validate__"  b:focus="__focus__"  onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+				<span b:bind="'__text__'"></span>
+			</b:if>		    
+			<b:if test="'__type__' == 'checkbox'">
+				<input b:name="__bind__" type="checkbox" b:truevalue="__truevalue__" b:falsevalue="__falsevalue__" b:id="__bind__" type="text" b:bind="__bind__" b:validate="__validate__"  b:focus="__focus__"  onfocus="addClass(this, 'hasFocus');" onblur="removeClass(this, 'hasFocus')" />
+				<span b:bind="'__text__'"></span>
+			</b:if>
+			<div class="error fieldError" b:showif="isError('__bind__')" b:binderror="__bind__" b:binderrordata="{field: '__label__'}"></div>
+		</dd>
+	</dl>
+</b:mapper>
+
+<b:formfield type="text" label="EMail Address" bind="emailAddress" validate="c.valid_required()"></b:formfield>
+<b:formfield type="password" label="Password" bind="password"></b:formfield>
+<b:formfield type="checkbox" text="I agree" bind="agreement" truevalue="true" falsevalue="false"></b:formfield>
+<b:formfield type="select" label="" bind="state" fill="state_codes" using="state_names"></b:formfield>
+<b:formfield type="radio" label="Like" bind="like" b:truevalue="'high'" text="A lot"></b:formfield>
+<b:formfield type="radio"              bind="lik" b:truevalue="'low'" text="Not so Much"></b:formfield>
+

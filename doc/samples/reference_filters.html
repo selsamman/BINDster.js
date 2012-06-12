@@ -1,0 +1,27 @@
+<script>
+MyController.prototype.parseDate = function() {
+	if (this.value == null || this.value.length == "") return null;
+	var parsed = Date.parse(this.value);
+	if (isNaN(parsed)) {
+		throw {message: "format"}
+	}
+	return new Date(parsed);
+}
+</script>
+<script>
+MyController.prototype.isAtLeast = function(min) {
+		if (this.value.length > 0 && this.value < min) 
+			throw {message: "minvalue", mininum: min}
+}
+</script>
+<script>
+MyController.prototype.formatDate = function {
+		if (!this.value) return "";
+		var date = this.value;
+		return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+}
+</script>
+<b:message name="minvalue" value="Must be at least {minimum}" ></b:message>
+<b:message name="minvalue" value="{field} must be at least {minimum}"></b:message>
+<input type="text" bind="deposit_amount" b:parse="parseCurrency()" b:validate="isAtLeast(25)" ></input>
+<div b:showif="isError('deposit_amount')" b:binderror="deposit_amount" b:binderrordata="{field: 'Your deposit'}"></div>

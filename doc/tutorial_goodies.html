@@ -1,0 +1,17 @@
+<h1>Other Goodies in BINDster</h1>
+<h2>Custom Tags (Mappers)</h2>
+<p>BINDSter lets you <a href="#page_reference_mappers">map custom tags</a> that effectively extends HTML.  You can define your own custom tag and define how it's attributes will be mapped to attributes in an HTML template. Combining this with conditional expressions and iteration this is equivalent to having HTML macros.
+<h2>Wrapping HTML</h2>
+<p>You can define an <a href="#page_reference_wrappers">HTML template that will be used to wrap elements</a> based on a selector expression.  For example you could define a "wrapper" that took all anchor elements and wrapped them in a three part structure that would create rounded corners</p>
+<h2>Bookmarks and the Back Button</h2>
+<p>Single page applications need to support the back button and also to be able to define their state using unique URLs.  BINDster uses <a href="#page_reference_anchors">hashmarks</a> to accomplish this.  Just define named anchors define what state properties are to be set when that anchor is linked to.  Then if all internal links in the application use the hash marks the back button will work properly.  This document is an example of navigating with hash marks.
+<h2>Bind to Selects</h2>
+<p>Asside from simple bindings to input fields, BINDster can map to select inputs (dropdowns), automatically filling them with name/value pairs.  It can also map to sets of radio buttons and check boxes.
+<h2>Binding to Complex Controls</h2>
+<p>A controler plug-in structure allows binding to complex UI controls such as sliders.</p>
+<h2>Formatting and Parsing</h2>
+<p>Binding would not be very useful if there was no formatting or parsing.  <a href="#page_reference_filters">Formatters and parsers</a> can be used to translate data as it is marshalled back and forth between form fields and the model.  This transforms the model from just being a view model into being a richer object model<p>
+<h2>Validation and Error Handling</h2>
+<p>You can ensure that your model never gets bad data through <a href="#page_reference_filters">parsing</a>.  BINDster is smart enough to keep a shadow copy of "bad" values so the user will always see the bad data until it is corrected but it is never marshalled into the model.
+<h2>No Injection Risks</h2>
+<p>Most templating systems use innerHTML which means that malicious data input by users could potentially end up in HTML and causing script to be executed.  BINDster does not use innerHTML and only sets the value of DOM elements.</p>

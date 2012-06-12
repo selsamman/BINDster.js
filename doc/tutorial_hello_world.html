@@ -1,0 +1,21 @@
+<h1>Hello World</h1>
+<p>
+	What would the world be like without a "Hello". For BINDster's Hello World add this to your header to include bindster:
+</p>
+<b:code name="tutorial_hello_world" start="7" end="7"></b:code>
+<p>
+	Create your model. The model can either be a prototyped object or a plain old object. Here we show a simple object created from JSON.  It has a single property called <strong>world</strong>:
+</p>
+<b:code name="tutorial_hello_world" start="8" end="12"></b:code>
+<p>
+	Create your view.  This view has two elements, each of which is bound to the <strong>world</strong> property in the model. The <strong>immediate</strong> parameter forces the model to be updated immediatly as you type rather than when the input loses focus:
+</p>
+<b:code name="tutorial_hello_world" start="15" end="16"></b:code>
+<p>
+	Bind the model to the view by creating a new instance of Bindster and passing it a new instance of your model.  This goes just before &lt;/BODY&gt;
+</p>
+<b:code name="tutorial_hello_world" start="17" end="19"></b:code>
+<p>And here it is.  Enter text in the control to see how it works</p>
+<b:example name="tutorial_hello_world" height="100"></b:example>
+<b:source name="tutorial_hello_world"></b:source>
+<p>For those that <a href="#page_reference_namespace">prefer not to introduce name spaces</a> all bindster attributes are also available using data-xxx where xxx is the specific bindster attribute.</p>

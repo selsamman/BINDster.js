@@ -1,0 +1,4 @@
+<h1>Wrappers</h1>
+<p>Wrappers allow DOM element to be "wrapped" within a document fragment.  The wrapping is done based on selectors so any element of a particular class/id/tag specification can be wrapped.  The wrappers are defined by applying the <strong>b:wrappername="wrapper name"</strong> to a container that then becomes a document fragement that will be used to wrap elements that reference it. The fragment should contain <strong>&lt;insert&gt;&lt;/insert&gt;</strong> to indicate where the referenced element should be copied.  The DOM element that matches the selector and all it's descendands will be inserted into the document fragment and then document fragment replaces the original element.</p>
+<p>This example will wrap any element with a class of super_rounded with a table structure tha can produce rounded corners.</p>
+<b:code name="reference_wrappers" start="1" end="999"></b:code>

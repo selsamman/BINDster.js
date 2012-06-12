@@ -1,0 +1,28 @@
+<h1>Conditionals</h1>
+<p>Conditional expressions allow DOM elements to be appear and disappear based on the value of properties in the model.  Just like with binding, the behaviour is immediate when the properties in the model are changed by the controller.  There attributes which control the hiding and showing of elements:</p>
+<ul>
+	<li><strong>b:test="js expression"</strong> - Defines an expression that is evaluated to determines whether the element should be hidden.
+		It is usually used inside the convenience element <strong>&lt;b:if&gt;&lt;/b:if&gt;</strong> as in: 
+			<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>&lt;b:if test="balance &lt; 0" &gt;Please deposit some cash&lt;/b:if&gt;</strong>. 
+			<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(You don't need the b: namespace when BINDster attributes are used within BINDSter tags)<br /><br />
+	</li>
+	<li><strong>b:hide="hide method"</strong>determines the mothod for hiding and showing elements.  These values are available:<br /><br />
+		<ul>
+			<li><strong>remove</strong> - Hide by removing the element's children and moving them into a document fragment and copying them back into the DOM when the elemetn is again shown. <strong>This is the default method for test.</strong></li>
+			<li><strong>display</strong> - Hide using <strong>display: none</strong> such that the element occupies no space.  The old display value is rememberd when the element is shown.</li>
+			<li><strong>visibility</strong> - Hide using <strong>visibility: hidden</strong> such that the element occupies space but does not display. visiblity is set to visible when the element is shown.</li>
+			<li><strong>offscreen</strong> - Hide by positioning the element absolute with a top of -32767px such that the element is properly rendered but not actually viewable.  This is useful in some circumstances where you would want to use  <strong>display: none</strong> but where you need the HTML to be fully rendered so heights and widths are calculated correctly even while hidden.<br /><br /></li>
+		</ul>
+	</li>
+	<li><strong>b:showif="js expression"</strong> - Short for <strong>test</strong> with <strong>b:hide="display"</strong> as in
+	<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>&lt;span b:showif="balance &lt; 0" &gt;Please deposit some cash&lt;/span&gt;</strong> 
+	<br /><br /></li>
+	<li><strong>b:visibleif="js expression"</strong>  - Short for <strong>test</strong> with <strong>b:hide="visibility"</strong> as in
+	<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>&lt;span b:visibleif="balance &lt; 0" &gt;Please deposit some cash&lt;/span&gt;</strong> 
+	<br /><br /></li>
+</ul>
+<p>This sample shows how elements are shown and hidden</p>
+<b:code name="conditionals" start="18" end="53"></b:code>
+<p>And here it is.  Enter text in the control to see how it works</p>
+<b:example name="conditionals" height="800"></b:example>
+<b:source name="conditionals"></b:source>

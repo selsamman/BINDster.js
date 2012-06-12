@@ -1,18 +1,37 @@
+fjs_cache = {};
 function formatJS(file, startingLine, endingLine, containerId)
 {
-	file = getFile(file, parseJS, {startingLine: startingLine, endingLine: endingLine, containerId: containerId});
+	var request = {startingLine: startingLine, endingLine: endingLine, containerId: containerId};
+	var cache = fjs_cache[file];
+	if (!cache) {
+		fjs_cache[file] = {requests: [request], status: 0};
+		getFile(file, parseJS, fjs_cache[file]);
+	} else
+		if (cache.status > 0)
+			doParseJS.call(request, cache.text);
+		else 
+			cache.requests.push(request);
+
 }
 function formatJSFromTextArea(textAreaId, startingLine, endingLine, containerId)
 {
-	parseJS.call({startingLine: startingLine, endingLine: endingLine, containerId: containerId}, 
+	doParseJS.call({startingLine: startingLine, endingLine: endingLine, containerId: containerId}, 
 		document.getElementById(textAreaId).value);
 }
-function parseJS(text)
+
+function parseJS(text) {
+	for (var ix = 0; ix < this.requests.length; ++ix)
+		doParseJS.call(this.requests[ix], text);
+	this.requests = [];
+	this.text = text;
+	this.status = 1;
+}
+function doParseJS(text)
 {
 	var text = text
 		.replace(/_textarea_/, "textarea")
 		.replace(/\>/g, "&gt;")
-		.replace(/\r|\n/g, ">5")
+		.replace(/\n\r|\r\n|\r|\n/g, ">5")
 		//.replace(/\<script(.*?)&gt;(.+?)\<\/script&gt;/gi, "<script$1&gt;>3Boo>4</script&gt;")
 		.replace(/>5/g, "\n")
 		//.replace(/ /g, "&nbsp;")
@@ -53,8 +72,8 @@ function parseJS(text)
 		text += ("<div class='codeLineNumber'>" + (ix + 1) + ":</div><div class='codeLine'>" + lines[ix] + "</div><br />");
 	}
 	text = text + "<div class='codeClear'>&nbsp;</div>";
-	if (this.containerId)
-		document.getElementById(this.containerId).innerHTML = text 
+	if (this.containerId) 
+		document.getElementById(this.containerId).innerHTML = text;
 	else
 		document.write(text);
 }
@@ -71,7 +90,7 @@ function getFile (file, callback, obj)
 		else
 			alert ("getXML returned" + request.status);
 	}
-	request.open('GET', file);
+	request.open('GET', file, true);
 	request.send("");
 }
 

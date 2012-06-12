@@ -1,0 +1,9 @@
+<h1>Binding Attributes</h1>
+<p>BINDSter also can bind values to most attributes. To do this:</p>
+<ul>
+	<li>Prepend the attribute with the BINDSter name space (b:)</li>
+	<li>Use any Javascript expression within curly brackets as in:
+		<br /><br /><strong>b:style="width: {totalWidth}px; height: {x + y}px" b:class="{ix % 1 ? 'odd' : 'even'}"</strong>
+	</li>
+</ul>
+<p>The expression is evaluated in the context of the model so references to the model need no qualification. t is re-evaluated any time any of the component variables change value.  You can use this on all attributes except for events (onxxxxx) because events are already interpreted as JS expressions</p>

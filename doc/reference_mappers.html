@@ -1,0 +1,18 @@
+<h1>Mappers (Custom Tags)</h1>
+<p>Mappers allow you to create your own tags that take will insert a document fragment in place of the tag while mapping attributes in the custom tag into the document fragment.  The custom tags and document fragment are defined using
+	<br /><br />&lt;tag name="tag name"&gt;Document framgement (HTML)&lt;/tag&gt;
+	Within the document fragment you can use <strong>__attribute name__</strong> to include the value of an attribute when the fragement is copied upon usage.
+	They are useful both for creating re-usable components. Here is simple mapper that defines a graphic button.
+</p>
+<b:code name="reference_mappers" start="1" end="9"></b:code>
+<p>A couple of things to note:</p>
+<ul>
+	<li>Mappers are defined in the body</li>
+	<li>They must be defined before they are used</li>
+	<li>Since you can only map attributes to attributes the way to include the value of text elements is to use bind them to a constant as illustrated in the button example above.</li>
+	<li>If you don't include an attribute (e.g. id) then the attribute will not be mapped.  In this example id= will not be added to the anchor element.
+	<li>If you include <strong>&lt;insert&gt;&lt;/insert&gt;</strong> all child nodes of the custom tag will be inserted.</li> 
+</ul>
+<p>You can use conditionals in a mapper though they are evaluated after the document fragment is inserted in the DOM.  Here is an example of a mapper that generates standard HTML for form fields using the common &lt;dt&gt;&lt;/dt&gt;&lt;dd&gt;&lt;/dt&gt;&lt;/dl&gt; pattern</p>
+<b:code name="reference_mappers" start="11" end="99"></b:code>
+</div>

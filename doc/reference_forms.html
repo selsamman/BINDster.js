@@ -1,0 +1,16 @@
+<h1>Forms</h1>
+<p>Forms leverage all of the features of <a href="#page_reference_binding">binding</a> as well as <a href="#page_reference_filters">parsers, formatters and validators</a>.  Putting all of these things together you can create very robust forms with flexible and intuitive validation.  This example shows all the features for form handling.  Try entering a badly formatted email address and hit the tab key</p> 
+<iframe class="example" src="samples/reference_forms.html" style="width: 720px; height: 380px"></iframe>
+<p>In this example mappers have been defined for each input field so you can refer to the input field using the <strong>formfield</strong> tag:</p>
+<b:code name="reference_forms" start="146" end="153"></b:code>
+<p>The custom <strong>formfield</strong> tag is defined using a <strong>mapper</strong> which will include the correct form field based on the parameters</p>
+<b:code name="reference_forms" start="120" end="144"></b:code>
+<p>The mapper also contains an error field at the end that is bound to any errors assocatiated with the binding using <strong>b:binderror</strong> and <strong>b:binderrordata</strong>.  The latter supplies a field name (reusing the field label) for the benefit of any error declartions which can now include <strong>{field}</strong></p>
+<p>Here are the messages</p>
+<b:code name="reference_forms" start="159" end="166"></b:code>
+<p>And here is the controller which contains all of the formatters, parsers and validators.  It has a submit function at line 14 that might submit the model to the back-end.  The submit function:</p>
+<ul>
+<li>Calls the <strong>validate</strong> method which will run through all of the validation to catch any fields that are required and generate errors if needed</li>
+<li>It then does some checking that can only be done on submit - making sure that the passwords match.  If they don't it calls <strong>setError</strong> which will set an error in the same way as does a validator</li>
+<li>Finally it calls <strong>hasErrors</strong> to see if there are any outstanding errors set with <strong>setError</strong>, validator or a parser</li>
+<b:code name="reference_forms" start="10" end="94"></b:code>

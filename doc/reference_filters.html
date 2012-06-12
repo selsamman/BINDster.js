@@ -1,0 +1,58 @@
+<h1>Parsers, Formatters, Validators and Errors</h1>
+<p>The data in the model should be in a format appropriate for computing rather than being formatted for display (think dollar signs, commas etc).  This means it needs to be translated as it is marshalled back and forth between the model and the DOM.  To that end BINDster provides:</p>
+<ul>
+	<li><strong>Parsers</strong> - code that will parse data in form fields into a suitable format, throwing an error when the format is incorrect.  BINDster will never transfer the data to the model unless the parser is happy with it.  Use the <strong>b:parse="js code"</strong> on any form field that contains a <strong>b:bind</strong>.  By convention the "js code" is simply a call to a method in the controller which is in scope when the js is executed (e.g. parseDate())</li>
+	<li><strong>Validator</strong> - code that process the data after it is parsed to determine whether it is correct or not.  
+	It can throw an error if the data is incorrect.  Use the <strong>b:validate="js code"</strong> on any form field that contains a <strong>b:bind</strong>.  The "js code" is usually one or more calls to validators methods in the controller (e.g. isBetween(0, 50);isMinimumLength(8))</li>
+	<li><strong>Error Binding</strong> - The <strong>b:binderror</strong> attribute binds an element to an error string that is specific to that binding.  The error string is set as part of the validator or parser throwing an error.</li>
+	<li><strong>Message Tags</strong> - The <strong>b:message</strong> tag maps a message code and data parameters to an error string such that the code in validators and formatters need not be language dependent.</li>
+	<li><strong>Formatters</strong> - code that will format data before it is transferred to the DOM.  To invoke the formatter use <strong>b:format="js code"</strong> on any element that contains a <strong>b:bind</strong>.  The "js code" is usually a method that will return the formatted value to be transferred to the element (e.g. c.formatDate())</li>
+</ul>
+<h2>Parsers</h2>
+<p>Parsers should do the following:</p>
+<ul>
+	<li>Expect the value directly from the form field in the controller's value property (e.g. this.value)</li>
+	<li>Translate the value as needed and return it</li>
+	<li>Throw an error object as does a paraser.if the value cannot be parsed.  The object should contain these properties::
+		<ul>
+			<li><strong>message</strong> which is either an error message or the name of a <strong>b:message</strong> which defines an error message</li>
+			<li>Any other properties that will be used by the <strong>b:message</strong> tag to format the error message</li>
+		</ul>
+	<li>Anything that the controller needs to do by way of setting state to indicate that an error condition exists.</li>
+</ul>
+<p>Here is an example of a parser:
+</p>
+<b:code name="reference_filters" start="1" end="10"></b:code>
+<h2>Validators</h2>
+<p>Validators are similar to parsers but generally are not expected to have to parse the values.  The validators are called after the parser and may also throw an error object.  They do not need to return a value.</p>
+<p>Here is an example of a validator:
+</p>
+<b:code name="reference_filters" start="11" end="16"></b:code>
+<h2>Message Tags</h2>
+<p>
+A special tag that allows the text of errors to be defined directly in the view to keep text out of the controller.  This makes multi-lingual applications easier to manage since only the view need be modified.  They are defined as:
+	<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;message name="error name" value="error message"&gt;&lt;/message&gt;
+	<br /><br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	or if you don't want to use namespaces
+	<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div data-tag="message" data-name="error name" data-value="error message"&gt;&lt;/div&gt;
+	<br /><br />
+The "error name" is a name that is referred to by the parser or validator when they throw an error.  It is the <strong>message</strong> property of the object that they throw.  The "error name" is the error string and may include {property references} within curly braces that inject values from other properties that are in the object being thrown by a parser or validator. Here is an example</p>
+<b:code name="reference_filters" start="24" end="24"></b:code>
+<h2>Error Binding</h2>
+<p>It is customary to place an error message in view, often next to the field that is in error.  BINDster has two attributes that help with this:</p>
+<ul>
+	<li>The <strong>b:binderror="bind property"</strong> attribute which will bind an element to any error generated for the property being bound to.</li>
+	<li>The <strong>b:binderrordata="extra data"</strong> attribute which when used with <strong>b:binderror="bind property"</strong> let's you specify additional properties that may be injected in the <strong>b:message</strong> tag</li>
+</ul>
+<p>Here is a complete example:
+</p>
+<b:code name="reference_filters" start="25" end="40"></b:code>
+<h2>Formatters</h2>
+<p>Formatters should do the following:</p>
+<ul>
+	<li>Expect the the value to be formatted in the controller's value property.</li>
+	<li>Format the data as needed and return the formatted value</li>
+</ul>
+<p>Here is an example of a formatter:
+</p>
+<b:code name="reference_filters" start="17" end="23"></b:code>

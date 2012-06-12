@@ -61,12 +61,14 @@
                		{"name":"Wisconsin","abbr":"WI"},
                		{"name":"Wyoming","abbr":"WY"}
                ],
-			   search: ""
+			   search: "",
+			   __stats: {}
 			}
 		</script>
 	</head>
 	<body>
-		Starts With: <input b:bind="search" b:when="50"/><br /><br />
+		Starts With: <input b:bind="search" b:when="now"/><br /><br />
+		<p>Renders: <span b:bind="__stats.renders"></span> Last Render Time: <span b:bind="__stats.last_render_time"></span> Total Render Time: <span b:bind="__stats.total_render_time"></span></p>
 		<table>
 			<tbody>
 				<b:iterate on="states" with="state" index="ax" counter="cx" b:filter="state.name.match(new RegExp('^' + search + '.*', 'i'))">

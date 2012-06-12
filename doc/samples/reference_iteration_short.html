@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script src="../../js/bindster.js"></script>
+		<script>
+			var model = {
+				states: [
+					{"name":"Alabama","abbr":"AL"},
+					{"name":"Alaska","abbr":"AK"},
+					/*....*/
+					{"name":"Wyoming","abbr":"WY"}
+				],
+			   search: ""
+			}
+		</script>
+	</head>
+	<body>
+		Starts With: <input b:bind="search" b:when="50"/><br /><br />
+		<table>
+			<tbody>
+				<b:iterate on="states" with="state" index="ax" counter="cx" b:filter="state.name.match(new RegExp('^' + search + '.*', 'i'))">
+					<tr b:class="{cx % 2 ? 'even' : 'odd'}">
+						<td b:bind="ax"></td>
+						<td b:bind="state.name"></td>
+						<td b:bind="state.abbr"></td>
+						<td><a href="" b:onclick="states.splice(ax,1)">Remove</a></td>
+					</tr>
+				</b:iterate>
+			</tbody>
+		</table>
+		<script>
+			var bindster = new Bindster(model);
+		</script>
+	</body>
+</html>

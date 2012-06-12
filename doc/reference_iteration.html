@@ -1,0 +1,72 @@
+<h1>Iteration</h1>
+<textarea id="reference_iteration" style="display: none">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+	<head>
+		<title>Bindster Simple Iteration</title>
+		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+		<script src="../../js/bindster.js"></script>
+		<script>
+			var model = {
+				states: [
+					{"name":"Alabama","abbr":"AL"},
+					{"name":"Alaska","abbr":"AK"},
+					/*....*/
+					{"name":"Wyoming","abbr":"WY"}
+				],
+			   search: ""
+			}
+		</script>
+	</head>
+	<body>
+		Starts With: <input b:bind="search" b:when="50"/><br /><br />
+		<table>
+			<tbody>
+				<b:iterate on="states" with="state" index="ax" counter="cx" b:filter="state.name.match(new RegExp('^' + search + '.*', 'i'))">
+					<tr b:class="{cx % 2 ? 'even' : 'odd'}">
+						<td b:bind="ax"></td>
+						<td b:bind="state.name"></td>
+						<td b:bind="state.abbr"></td>
+						<td><a href="" b:onclick="states.splice(ax,1)">Remove</a></td>
+					</tr>
+				</b:iterate>
+			</tbody>
+		</table>
+		<script>
+			var bindster = new Bindster(model);
+		</script>
+	</body>
+</html>
+</textarea>
+<p>Iteration is the process of repeating nodes in the DOM for each row in a corresponding array.  Practically this is equivalent to iteration in a templating system.  The difference is that iteration is achieved by cloning nodes.  Each time the DOM is rendered it is synchronized with the current contents of the corresponding array.  This means that the iteration is dynamically kept in sync with changing values in the array.  It is highly optimized so that nodes are re-used when possible rather than re-generating each time.  Each iteration may reference either through binding or in conditional expressings a specific row in the array 
+</p>
+<p>Iteration can be applied using the <strong>&lt;b:iterate&gt;</strong> tag.</p>
+<ul>
+		<li><strong>on</strong> a reference to an array within the model that is to control the iteration. </li>
+		<li><strong>with</strong> a reference to a property in the model that will be set to the row being iterated.  It can be referenced in conditionals, binding or in events (that use the b: namespace)</li>
+		<li><strong>index</strong> a reference to a property in the model that will be set to the zero-based oridinal of the row being iterated.</li>
+		<li><strong>counter</strong> a reference to a property in the model that will be set to a one based counter for each row being iterated.</li>
+		<li><strong>filter</strong> an expression that is evaluated on each iteration to determine whether the row in the array will be processed.</li>
+	</ul>
+<p>Consider this simple example of iteration:</p>
+<b:code name="reference_iteration_short" start="8" end="17"></b:code>
+<b:code name="reference_iteration_short" start="21" end="33"></b:code>
+<p>and note the following:</p>
+<ul>
+	<li><strong>&lt;b:iterate&gt;</strong> on line 24 is a node that will be iterated on (e.g. cloned) for each element in the array</li>
+	<li><strong>on</strong> refers the states array on line 10 within the model</li>
+	<li><strong>with</strong> refers to the state property in the model.  This need not be initialized in the model as iterate will do that as soon as it iterates.  You can see that the binding references in lines 27 and 28 refer to the state property to bind to the correct row being iterated</li>
+	<li><strong>index</strong> refers to the ax property in the model which will be set to the ordinal position in the array.  It is referenced in line 26 to display the state number</li>
+	<li><strong>counter</strong> is a counter referenced in line 25 to set an even / odd class to make the display more readable</li>
+	<li><strong>fiter</strong> an expression that matches the current state name with the search criteria entered by way of the bind on line 21</li>
+</ul>
+<p>Here is the working example:</p>
+<b:example name="reference_iteration" height="600" ></b:example>
+<b:source name="reference_iteration"></b:source>
+<p>A few important nodes on iteration:</p>
+<ul>
+<li>The <strong>b:iterate</strong> tag is provided for convenience.  Whenever you use a tag in the BINDster namespace, the attributes of the tag are prefixed with the name of the tag.  So the real attribute names for the iteration attributes are <strong>b:iterate-on, b:iterate-with, b:iterate-index, b:interate-counter, b:iterate-filter</strong>.   You can apply iteration to any element by using the real attribute names</li>
+<li>When using iterate on table rows be sure you use the <strong>&lt;tbody&gt; tag.</strong>  Browsers are very picky about mixing namespaces and in fact move the <strong>&lt;iterate&gt;</strong> outside of the table before BINDster gets to process it.</li>
+<li>Iteration of very large datasets can be slow.  The example's full source shows the use of the <strong>__stats</strong> property of the controller which is populated with performance information.  Note that this is usually the previous render.  The debugger can hugely slow down DOM rendering in BINDster.</li>
+</ul>

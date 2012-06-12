@@ -1,0 +1,14 @@
+<h1>Namespaces and data-xxx</h1>
+<p>BINDster's preferred method of declaring binding is to use namespaces for BINDSter specific tags and attributes.  HTML 5 does not specifically support namespaces but tollerates them mainly for the benefit of popular namespaces such as SVG and MathML XFBML.  However, other binding frameworks have chosen to use the data-xxx attributes of HTML 5 and this method is fully supported by BINDster as well.  To use the data-xxx style do the following:</p>
+<ul>
+	<li>Use <strong>data-</strong> in place of <strong>b:</strong> on all bindster related attributes</li>
+	<li>Replace BINDster-specific tags with <strong>&lt;div data-xxx-yyy="attribute value" ...&gt; . . . &lt;/div&gt;</strong> where xxx is the tag name and yyy is the attribute name.  For <strong>&lt;b:iterate on="addresses" index="ax"&gt</strong> you can simply apply <strong>data-iterate-on</strong> and <strong>data-iterate-index</strong> to the container you wish to iterate</li>
+</ul>
+<p>We feel that that the use of namespaces makes the HTML very clear and given the fact that this works with all modern browsers we feel it is worthwhile. Still it is your code and you need to decide which way is best for your project.   If you use namespaces you should be aware of several issues:</p>
+<ul>
+	<li>Don't forget to declare the namespace or your code will not work with IE 8:<br />
+	&lt;html xmlns="http://www.w3.org/1999/xhtml" <strong>xmlns:b="http://bindster.com"</strong>  xml:lang="en" lang="en"&gt;</li>
+	<li>Your HTML will not validate since no validators support this feature.  If you absolutely must have HTML that can be validated by a 3rd party then you should not use this method.  If you view validation as something that will help you catch errors we provide a handy service that translates your HTML to the data-xxxx style which can and will validate - <a href="http://bindster.com/cgi-bin/tohtml5"> http://bindster.com/cgi-bin/tohtml5 </a>.  This can be used to prefix your URLs to check to quickly see whether they would validate when translated to the data-xxxx style.</li>
+	<li>At some point in the future there could be the possiblity that a browser does not properly support namespaces or that the W3C will take a tougher stance against them.  In that case you can easily convert to the data-xxx style using the handy translation service mentioned above</li>
+</ul>
+<p>Additionally all binding information can be specified by code in the controller and/or in the model.  We don't like to prescribe any particular design pattern on you and in fact go out of our way to be flexible in terms of specifying binding information in the model, view and controller.</p>

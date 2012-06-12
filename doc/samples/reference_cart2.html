@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+
+<head>
+	<title>Bindster Shopping Cart Example</title>
+	<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+	<script type="text/javascript" src="../../js/bindster.js"></script>
+	<script type="text/javascript" src="../../js/baseController.js"></script>
+	<script>
+		function Item() {
+			this.category = null;
+			this.product = null;
+			this.qty = 1;
+		}
+		var model = {
+			items: [new Item()],
+			// Product names courtesy of those used in knockout.js example
+			products : 
+				[
+				  {
+					"products": [
+					  {
+						"name": "1948 Porsche 356-A Roadster",
+						"price": 53.9
+					  },
+					  {
+						"name": "1948 Porsche Type 356 Roadster",
+						"price": 62.16
+					  },
+					  {
+						"name": "1949 Jaguar XK 120",
+						"price": 47.25
+					  }
+					],
+					"name": "Classic Cars"
+				  },
+				  {
+					"products": [
+					  {
+						"name": "1936 Harley Davidson El Knucklehead",
+						"price": 24.23
+					  },
+					  {
+						"name": "1957 Vespa GS150",
+						"price": 32.95
+					  },
+					  {
+						"name": "1960 BSA Gold Star DBD34",
+						"price": 37.32
+					  }
+					],
+					"name": "Motorcycles"
+				  },
+				  {
+					"products": [
+					  {
+						"name": "1900s Vintage Bi-Plane",
+						"price": 34.25
+					  },
+					  {
+						"name": "1900s Vintage Tri-Plane",
+						"price": 36.23
+					  },
+					  {
+						"name": "1928 British Royal Navy Airplane",
+						"price": 66.74
+					  },
+					  {
+						"name": "1980s Black Hawk Helicopter",
+						"price": 77.27
+					  },
+					  {
+						"name": "ATA: B757-300",
+						"price": 59.33
+					  }
+					],
+					"name": "Planes"
+				  }
+				]
+			};
+
+		/* Controller */
+		function CartForm() {
+				this.category = "Classic Cars";
+		}
+			CartForm.prototype = new BaseController();
+			CartForm.prototype.addItem = function () {
+				  this.model.items.push(new Item());
+			};
+			CartForm.prototype.removeItem = function (index) {
+					this.model.items.splice(index, 1);
+			};
+			CartForm.prototype.getTotal = function () {
+				var total = 0;
+				for (var ix=0; ix < this.model.items.length; ++ix) {
+					var item = this.model.items[ix];
+					if (item.product)
+						total += item.qty * this.model.products[item.category].products[item.product].price;
+				}
+				return total;
+			};
+			CartForm.prototype.getItemPrice = function() {
+				var item = this.model.item;
+				return item.product ? this.model.products[item.category].products[item.product].price : 0;
+			}
+			CartForm.prototype.getItemTotalPrice = function() {
+				var item = this.model.item;
+				return item.product ? this.getItemPrice() * item.qty : 0;
+			}
+
+	</script>
+</head>
+
+<body>
+	<div>
+		<table>
+			<thead>
+			<tr>
+				<th>Qty</th>
+				<th>Product</th>
+				<th>Cost</th>
+				<th>Total</th>
+				<th></th>
+			</tr>
+			</thead>
+			<tbody>
+				<b:iterate on="items" with="item" index="ix">
+					<tr>
+						<td><input type="number" b:bind="item.qty" /></td>
+						<td>
+							<select b:bind="item.category" b:fill="products" b:fill-key="index" b:fill-value="value.name" b:onchange="item.product = null"></select>
+							<select b:show-if="item.category" b:bind="item.product" b:fill="products[item.category].products" b:fill-key="index" b:fill-value="value.name"></select>
+						</td>
+						<td><label size="6" b:bind="getItemPrice()"  b:format="formatCurrency()"></label></td>
+						<td b:bind="getItemTotalPrice()" b:format="formatCurrency()"></td>
+						<td>
+							<a href b:onclick="removeItem(ix)">Remove</a>
+						</td>
+					</tr>
+				</b:iterate>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td><a href b:onclick="addItem()">add item</a></td>
+					<td></td>
+					<td>Total:</td>
+					<td b:bind="getTotal()" b:format="formatCurrency()"></td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<script>
+		var bindster = new Bindster(model, null, new CartForm());
+	</script>
+</body>
+
+</html>

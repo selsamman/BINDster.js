@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 function Bindster(model, view, controller, namespace, defer)
 {
+	document.body.style.visibility = "visible";
 	// Create an anchor for events
 	if (typeof(window['bindster_instance_count']) == 'undefined') {
 		window['bindster_instance_count'] = 0;
@@ -62,7 +63,7 @@ function Bindster(model, view, controller, namespace, defer)
 			if (!error) {
 				error = propRef;
 				propRef = objRef;
-				objRef = this.model;
+				objRef = this.data;
 			}
 			this.bindster.setError(objRef, propRef, error);
 		}
@@ -106,6 +107,11 @@ function Bindster(model, view, controller, namespace, defer)
 	this.set_focus = true;
 	this.alertCount = 0;
 	this.attrToProp = {class: "className", maxlength: "maxLength", for: "htmlFor"};
+	if (this.data && this.data.__stats) {
+		this.data.__stats.renders = 0;
+		this.data.__stats.total_render_time = 0;
+		this.data.__stats.last_render_time = 0;
+	}
 					
 	if (controller && typeof(controller.preRenderInitialize) == 'function')
 		controller.preRenderInitialize();
@@ -148,6 +154,9 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 	if (topLevel) {
 		this.errorCount = 0;
 		this.last_focus_priority = 1;
+		if (this.data && this.data.__stats) {
+			this.start_render = new Date();
+		}
 	}
 	node = node ? node : (this.renderNode ? this.renderNode :  document.body.firstChild);
 
@@ -162,7 +171,7 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 		var finger_print = parent_fingerprint;
 
 		if (node.nodeType == 8 && node.data.match(/#include.*virtual="(.*)"/))  //<!--#include virtual="bindster_shared.jsp" -->
-			this.fetchFile(RegExp.$1, node);
+			this.includeComment(RegExp.$1, node);
 		
 		// ELEMENT_NODE that is not used by another bindster instance (class __bindster_view)
 		if (node.nodeType == 1 && (node == this.renderNode || (typeof(node.className) != 'string') || !node.className.match(/__bindster_view__/))) // Element
@@ -225,11 +234,39 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 
 			// Process Mapper
 			if (tags.map && !node.getAttribute("bindster_map")) {
+				//node.appendChild(this.mappers[tags.map.name].cloneNode(true));
+				// Cut out existing content in case it is to be inserted in template
+				var child = node.firstChild;
+				var originalChild = child;
+				if (child) {
+					var cut = document.createElement("DIV");
+					while (child) {
+						var nextChild = child.nextSibling;
+						cut.appendChild(child.parentNode.removeChild(child));
+						child = nextChild;
+					}
+				}
+				this.insertElements(node, this.mappers[tags.map.name].cloneNode(true).firstChild);
+				if (originalChild) {
+					var insertNode = node.getElementsByTagName('INSERT')[0] || 
+									 node.getElementsByTagName(this.namespace_prefix.toUpperCase() +':INSERT')[0] ||
+									 node.getElementsByTagName('INS')[0];
+					if (insertNode) {
+						this.insertElementsBefore(insertNode.parentNode, cut.firstChild, insertNode);	// Insert old content
+						insertNode.parentNode.removeChild(insertNode);	// Kill the insert marker
+					} else
+						this.throwError(node, tags.map.name, "Must close explicitly with </" + node.tagName.toLowerCase() + ">");
+				}
+				node.setAttribute("bindster_map", "mapped");
+			}
+
+			// Process includes
+			if (tags.includeurl && (!node.getAttribute("bindster_includeurl") || 
+				node.getAttribute("bindster_includeurl") != tags.includeurl)) {
 				if (node.firstChild)
 					this.throwError(node, tags.map.name, "Must close explicitly with </" + node.tagName.toLowerCase() + ">");
-				//node.appendChild(this.mappers[tags.map.name].cloneNode(true));
-				this.insertElements(node, this.mappers[tags.map.name].cloneNode(true).firstChild);
-				node.setAttribute("bindster_map", "mapped");
+				this.includeNode(tags.includeurl, node, tags.includeasync ? true : false);
+				node.setAttribute("bindster_includeurl", tags.includeurl);
 			}
 
 			// Process recording of mappers
@@ -260,6 +297,8 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 				node.bindster.controller = eval("new " + tags.controller + "(controller_interface)");
 				this.restoreElement(node);
 			}
+			
+
 			
 			if (tags.bind)
 				var bind_data = this.get(tags.bind);
@@ -311,6 +350,36 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 						this.throwError(node, 'fill', 'cannot get data to fill' + tags.fill);
 					else
 					{
+						// If an associative array (hash) create fill and using
+						var do_sort = false;
+						if (!(fill_data instanceof Array)) {
+							var fill_using = fill_data
+							fill_data = [];
+							for (key in fill_using)
+								fill_data.push(key);
+							do_sort = true;
+						}
+						// Run through filter functions
+						var keys = [];
+						var values = {};
+						for (var ix = 0; ix < fill_data.length; ++ix)
+						{
+							var key = tags.fillkey ? 
+								this.eval(tags.fillkey, {index: ix, value: fill_data[ix]}, "fillkey", node)
+								: fill_data[ix];
+							if (key != null) {
+								var value = fill_using ? fill_using[key] : fill_data[ix];
+								value = tags.fillvalue ? 
+									this.eval(tags.fillvalue, {key: key, value: value, index: ix}, "fillvalue", node)
+									: value;
+								if (value != null) {
+									keys.push(key);
+									values[key] = value;
+								}
+							}
+						}
+						if (do_sort)
+							keys.sort(function(a, b) {return values[a] > values[b]})
 						if (node.tagName == 'SELECT')
 						{
 							do_render = false;
@@ -318,15 +387,18 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 							// Iterate through the data
 							var child = node.firstChild;
 							var selected = 0;
-							for (var ix = 0; ix < fill_data.length; ++ix)
+							var lastValue = null;
+							for (var ix = 0; ix < keys.length; ++ix)
 							{
-								var child = child ? child : node.appendChild(document.createElement('OPTION'));
-								child.value = fill_data[ix];
-								if (fill_using)
-									child.innerHTML = fill_using[fill_data[ix]];
-								else
-									child.innerHTML = fill_data[ix];
-								child = child.nextSibling;
+								var key = keys[ix];
+								var value = values[key];
+								if (value != lastValue) {
+									var child = child ? child : node.appendChild(document.createElement('OPTION'));
+									child.value = key;
+									child.text = value;
+									child = child.nextSibling;
+									lastValue = value;
+								}
 							}
 							// Kill extra options
 							if (child && child == node.firstChild)
@@ -450,13 +522,8 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 							var bind_data = this.eval(tags.bind, null, "bind", node);
 							if (typeof(bind_data) == 'undefined')
 								this.throwError(node, 'bind', tags.bind + ' returned undefined', node);
-							if (tags.format) {
-								if (this.controller)
-									this.controller.value = bind_data
-								else 
-									window['bindster_value'] = bind_data;
-								bind_data = this.eval(tags.format, null, 'format', node);
-							}
+							if (tags.format)
+								bind_data = this.evalWithValue(tags.format, bind_data, 'format', node);
 						} else	
 							this.errorCount++;
 						var last_value = this.clearErrors ? null : node.bindster.bind;
@@ -468,14 +535,15 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 								node.bindster.bind =  bind_data;
 							}
 						}
-						else if (node.tagName == 'INPUT' && (node.type.toLowerCase() == 'text' || node.type.toLowerCase() == 'password'))
+						else if (node.tagName == 'INPUT' && (node.type.toLowerCase() == 'text' || node.type.toLowerCase() == 'number' || 
+							     node.type.toLowerCase() == 'password'  || node.type.toLowerCase() == 'input' ))
 						{
 							if (tags.onenter)
 								this.addEvent(tags, 'onenter', this.getBindAction(tags,   'target.value') + tags.onenter);
 
 							if (tags.when)
-								this.addEvent(tags, 'onkeyup',this.getBindAction(tags,   'target.value'), true);
-							this.addEvent(tags, 'onchange', this.getBindAction(tags,   'target.value'));
+								this.addEvent(tags, 'onkeyup',this.getBindAction(tags,   'target.value'), tags.when > 0 ? tags.when : true);
+							this.addEvent(tags, node.type.toLowerCase() == 'number' ? 'oninput' : 'onchange', this.getBindAction(tags,   'target.value'));
 							this.validateValue(tags, node.value, node);
 							this.setFocus(tags, node);
 							if (!bind_error && last_value != bind_data)
@@ -529,11 +597,28 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 							do_render = false;
 							this.validateValue(tags, node.value, node);
 							//this.setFocus(tags, node);
-							if (!bind_error && last_value != bind_data) {
+							var selected = false;
+							if (!bind_error && last_value !== bind_data) {
 								child = node.firstChild;
 								while (child) {
-									child.selected = child.value == bind_data;
+									if (child.value == bind_data) {
+										child.selected = true
+										selected = true;
+									}
 									child = child.nextSibling;
+								}
+								if (!selected) {
+										var child = node.appendChild(document.createElement('OPTION'));
+										child.value = bind_data;
+										child.text = "Select ...";
+										child.selected = true;
+								} else {
+									child = node.firstChild;
+									while (child) {
+										if (!child.selected && child.text == "Select ...")
+											node.removeChild(child);
+										child = child.nextSibling;
+									}
 								}
 							}
 						}
@@ -613,6 +698,12 @@ Bindster.prototype.render = function (node, context, parent_fingerprint, wrapped
 		this.set_focus = false;
 		if (this.controller && typeof(this.controller.onrender) == "function")
 			this.controller.onrender.call(this.controller);
+		if (this.data && this.data.__stats) {
+			this.data.__stats.last_render_time = Math.floor((new Date()).getTime() - this.start_render.getTime());
+			this.data.__stats.total_render_time += this.data.__stats.last_render_time;
+			this.data.__stats.renders ++;
+		}
+
 	}
 
 }
@@ -803,7 +894,7 @@ Bindster.prototype.addEvent = function(tags, event, action, defer)
 {
 	if (!tags.events[event])
 		tags.events[event] = new Array();
-	tags.events[event].push({action: action, defer: defer ? true : false});
+	tags.events[event].push({action: action, defer: defer ? (defer > 0 ? defer * 1 : true) : false});
 }
 // Setup all events for the node
 Bindster.prototype.processEvents = function(node, tags, context, cloned)
@@ -837,7 +928,7 @@ Bindster.prototype.processEvents = function(node, tags, context, cloned)
 			var script = tags.events[event_name][jx].action.replace(/\'/g, "\\\'");
 			action +=  (this.instance + ".eval('" + script + "',null,'" + event_name + "',node,ev);");
 			if (tags.events[event_name][jx].defer)
-				defer = 1000;
+				defer = tags.events[event_name][jx].defer;
 			if (!script.match(/^addClass\(".*?"\)$/) && !script.match(/^removeClass\(".*?"\)$/))
 				modify_data = true;
 		}
@@ -916,7 +1007,10 @@ Bindster.prototype.scheduleRender = function(defer, prerender, prerender_error, 
 	
 	clearTimeout(this.timeout_token);
 
-	defer = defer ? (defer < 100 ? 100 : defer) : 0;
+	if (defer)
+		foo = 23;
+
+	defer = defer ? (defer < 50 ? 50 : defer) : 0;
 	var renders = "";
 	for (var ix = 0;ix < window['bindster_instance_count']; ++ix)
 		renders += ("window['bindster_instances'][" + ix + "].render();");
@@ -1090,6 +1184,8 @@ Bindster.prototype.getTags = function (node, mapAttrs, finger_print)
 			case "iteratecounter":
 			case "iteratefilter":
 			case "fill":
+			case "fillkey":
+			case "fillvalue":
 			case "using":
 			case "bind":
 			case "parse":
@@ -1108,6 +1204,7 @@ Bindster.prototype.getTags = function (node, mapAttrs, finger_print)
 			case "controllerdata":
 			case "onarrival":
 			case "onenter" :
+			case "includeurl":
 				tags[attr] = value;			
 				break;
 			
@@ -1117,6 +1214,13 @@ Bindster.prototype.getTags = function (node, mapAttrs, finger_print)
 					tags['hide'] = value;
 				else
 					this.throwError(node, attr, "hide must be visibility, display, offscreen or remove");
+				break;
+
+			case "includeasync":
+				if (value.match(/^yes|no$/i))
+					tags['includeaysync'] = (value == "yes");
+				else
+					this.throwError(node, attr, "include-async must be yes or no");
 				break;
 			
 			case  "showif":
@@ -1258,6 +1362,15 @@ Bindster.prototype.getText = function(node)
 	} catch(e) {
 		return false;
 	}
+}
+Bindster.prototype.evalWithValue = function(js, value, error_message, node, ev)
+{
+	if (this.controller)
+		this.controller.value = value;
+	else
+		window['bindster_value'] = value;
+	return this.eval(js, {value: value}, error_message, node, ev);
+
 }
 Bindster.prototype.eval = function(js, data, error_message, node, ev)
 {
@@ -1455,10 +1568,16 @@ Bindster.prototype.createDelegate = function(obj, func)
 		return func.apply(obj, innerparams)
 	}
 }
-Bindster.prototype.fetchFile = function (file, node, async) {
+Bindster.prototype.includeComment = function (file, node) {
+	this.fetchFile(file, node, false, this.includeCommentSuccess, this.includeCommentFailure);
+}
+Bindster.prototype.includeNode = function (file, node, async) {
+	this.fetchFile(file, node, async, this.includeNodeSuccess, this.includeNodeFailure);
+}
+Bindster.prototype.fetchFile = function (file, node, async, success, failure) {
 	var request = this.getXHR();
 	request.open('GET', "file:" + file, async ? true : false);
-	request.onreadystatechange = this.createDelegate(this, this.processFetchResponse, request, this.createDelegate(this, this.fetchSuccess, node, async), this.createDelegate(this, this.fetchFailure, file, node));
+	request.onreadystatechange = this.createDelegate(this, this.processFetchResponse, request, this.createDelegate(this, success, node, async), this.createDelegate(this, failure, file, node));
 	try {
 		request.send(null);
 	} catch (e) {
@@ -1485,7 +1604,7 @@ Bindster.prototype.processFetchResponse = function (event, request, success, fai
 	else 
 		failure.call(this, statusText);
 }
-Bindster.prototype.fetchSuccess = function (request, node, async) {
+Bindster.prototype.includeCommentSuccess = function (request, node, async) {
 	node.data="";
 	var div = document.createElement("DIV");
 	div.innerHTML = request.responseText;
@@ -1493,8 +1612,16 @@ Bindster.prototype.fetchSuccess = function (request, node, async) {
 	if (async)
 		this.scheduleRender();
 }
-Bindster.prototype.fetchFailure = function (error, file, node) {
+Bindster.prototype.includeCommentFailure = function (error, file, node) {
 	node.data="";
+	this.throwError(node, "include of " + file, error);
+}
+Bindster.prototype.includeNodeSuccess = function (request, node, async) {
+	node.innerHTML = request.responseText;
+	if (async)
+		this.scheduleRender();
+}
+Bindster.prototype.includeNodeFailure = function (error, file, node) {
 	this.throwError(node, "include of " + file, error);
 }
 Bindster.prototype.getXHR = function()

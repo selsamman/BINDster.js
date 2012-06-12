@@ -1,0 +1,15 @@
+<h1>Conditional Expressions</h1>
+<p>BINDSter uses conditional constructs similar to those found in templating systems to control what is displayed.  The conditions are usually based on testing properties in the model that serve as states for the applications.
+</p>
+<p>We will extend the previous sample application to include a popup that allows the address to be edited.  This popup is only displayed when the popup property is true. The popup binds directly to <strong>edit_address</strong> which is a temporary reference to the current address.</p>
+<b:code name="tutorial_master_detail3" start="61" end="71"></b:code>
+<p>Our main iteration of the addresses has a couple of new elements</p>
+<b:code name="tutorial_master_detail3" start="39" end="59"></b:code>
+<p>First you can see that we introduced the <strong>b:with</strong> on the iteration.  This is simply a short cut for using indexes when referencing elements of an array being iterated.  On line 54 you see a link that sets popup to true and also sets the temporary current_address property.</p>
+<p>One other type of conditional expression is found on line 42.  Any HTML attribute that is prefixed with a b: (or data-) can have a JavaScript expression embedded within {}.  The expression returns a value that will be substituted into the attribute any time any of the components of the expression change.  Here we are setting the class to 'active' when the current index is equal to the index being iterated.</p>
+<p>Variables being referred to in the BINDSter tags must be defined in the model.  <strong>popup</strong> and <strong>current_ax</strong> have been added.  <strong>edit_address</strong> are also added.  Any property referred to in BINDster attributes must be defined in either the model or the controller.</P>
+<b:code name="tutorial_master_detail3" start="8" end="19"></b:code>
+<p>Finaly some tweaks are needed to the controller to setup <strong>edit_address</strong> when a new address is added:<p>
+<b:code name="tutorial_master_detail3" start="23" end="34"></b:code>
+<p>Here is what the application looks like:</p>
+<b:example name="tutorial_master_detail3" height="300" ></b:example>

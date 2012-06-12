@@ -1,0 +1,10 @@
+<h1>Iteration</h1>
+<p>Binding individual variables is usefull but binding repeating data is a lot more interesting. Let's say we want a simple address book with a name and email address.  Here is the model:</p>
+<b:code name="tutorial_simple_iteration" start="8" end="15"></b:code>
+<p>The <strong>iterate</strong> tag will clone all of it's child nodes for each element in the array specified by the <strong>on</strong> attribute.  The <strong>index</strong> attribute causes it to set a property to the ordinal position of the array element being iterated.  This let's you bind to the specific array element. In this case the array is <strong>addresses</strong>, the index property <strong>ax</strong></P>
+<b:code name="tutorial_simple_iteration" start="18" end="27"></b:code>
+<p>And the results look like this</P>
+<b:example name="tutorial_simple_iteration" height="140" ></b:example>
+<b:source name="tutorial_simple_iteration"></b:source>
+<p>For those that <a href="#page_reference_namespace">prefer not to introduce name spaces</a> simply apply <strong>data-iterate-on</strong> and <strong>data-iterate-index</strong> directy on the <strong>&lt;tr&gt;</strong>:</p>
+<b:code name="tutorial_simple_iteration_data_bind" start="18" end="25"></b:code>

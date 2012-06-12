@@ -4,6 +4,7 @@ body {
 	color: #5c5e5c;
 	font-size: 15px;
 	background: url(images/header_middle_bg.gif) 0px 0px repeat;
+	overflow-y: scroll;
 }
 h1 {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;

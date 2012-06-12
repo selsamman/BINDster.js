@@ -1,0 +1,38 @@
+<h1>Binding Selects</h1>
+<p>When binding to selects these attributes are used:</p>
+<ul>
+	<li><strong>b:fill</strong> A Javascript expression that returns an array or an associative array used to create <strong>&lt;option&gt;</strong> sub-elements for the drop-down.
+		<ul>
+			<li>If an array is returned each row is used for both the text and the option values. The row may be a string value or an object.  In the latter case the <strong>b:fill-value</strong> and <strong>b:fill-key</strong> expressions must be used to extract the values from the object.</li>
+			<li>If an associative array is returned, the key is used as the option value and the value as the option text with the array sorted by the option text. <strong>b:fill-value</strong> may be used to extract a string value for the option text if the array value is an object rather than a string.</li>
+		</ul>
+	</li>
+	<li><strong>b:using</strong> A Javascript expression that returns an associate array that translates the strings in <strong>b:fill</strong> into the text values for the <strong>&lt;option&gt;</strong> sub-elements. It is generally used when you want a specific order for key/value pairs since the order of an associative array itself is not defined.</li>
+	<li><strong>b:fill-value</strong> A Javascript expression that is evaluated for each value of the option to obtain the text value.  It is evaluated with the JavaScript variable <strong>value</strong> in scope which contains the particular value from the <strong>fill/using</strong> arrays and with the JavaScript variable <strong>index</strong> in scope which contains the ordinal position of the fill array if an array is used with fill. If false is returned then the element is skipped to allow for filtering.
+	</li>
+	<li><strong>b:fill-key</strong> A JavaScript expression that is evaluated for each value of the option to obtain valeu (key).  It is evaluated with the JavaScript variable <strong>value</strong> is in scope which contains the particular value from the <strong>fill/using</strong> arrays and with the JavaScript variable <strong>index</strong> in scope which contains the ordinal position of the fill array if an array is used with fill. If false is returned then the element is skipped to allow for filtering.
+	</li>
+	<li><strong>b:bind</strong> creates a bi-directional binding to a Javascript property or variable that will select one of the values in the <strong>b:fill</strong> or the <strong>b:using</strong> array if specified.</li>
+	<li><strong>b:empty</strong>The string that is displayed if there is no match found for the select.  By default this is "Please Select ...".  This let's set a value in the object model (such as null) that indicates that a selection needs to be made.</li>
+</ul>
+<p>Here is an example of two select statements working together to create categories of products for a shopping cart.</p>
+<b:example name="reference_cart" height="170"></b:example>
+<p>The data is normalized and consists of an assocative array of products, the key for which is a category code</p>
+<b:code name="reference_cart" start="25" end="84"></b:code>
+<p>The category codes are mapped via an associative array to their values</p>
+<b:code name="reference_cart" start="19" end="23"></b:code>
+<p>The HTML for the shopping cart looks like this</p>
+<b:code name="reference_cart" start="116" end="150"></b:code>
+The binding of the select on line 131 fills the category select from an associative array of strings.  The <strong>onchange</strong> simply clears the product selection when a category is selected.  The binding of the second select fills from the <strong>product</strong> associative array.  Because it is an array of objects <strong>fill-value</strong> returns the name of the product.  It also "filters" the array to just those that are for the current category.</p>
+<p>The controller is fairly simple and manages adding and deleting as well as computing the prices and totals:</p>
+<b:code name="reference_cart" start="87" end="109"></b:code>
+<p>The true flexibility of filling a select is demonstrated by showing alternative object model designs.  What if instead of a single array of products that is filtered by a category the model was organized as a list of categories and each category had a list of products.  This would be a more typical arrangement when using an ORM or noSQL database on the back-end.  Here is the alternative structure:</p>
+<b:code name="reference_cart4" start="25" end="54"></b:code>
+<p>and here is how the two selects would be filled</strong>
+<b:code name="reference_cart4" start="129" end="130"></b:code>
+<p>While it may not be realistic it is possible that your data is not coded at all. This might be useful when building a demo or protype.  This structure is borrowed from one used in a knockout.js example:</p>
+<b:code name="reference_cart2" start="20" end="55"></b:code>
+<p>And here is the way the selects would look</p>
+<b:code name="reference_cart2" start="133" end="134"></b:code>
+<p>Note the use of the <strong>index</strong> reference in the fill-key which returns the array index.  This means that the actual binding to the category and product variables in the model is the ordinal position of the category or product.  This can then be used to retrieve the correct string values.</p>
+	

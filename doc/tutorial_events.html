@@ -1,0 +1,14 @@
+<h1>Events</h1>
+<p>To do anything useful we need events.  With BINDster you need events only for real-world actions that the user can take such as clicking on a button.  We will extend the iteration example to allow the array of addresses to be added and deleted.
+</p>
+<p>To do this we need a controller that will handle the add and delete actions</P>
+<b:code name="tutorial_simple_iteration_events" start="15" end="23"></b:code>
+<p>The Controller class is where you put functions that can be referred to in event handlers.  When referencing data in the model you must refer to the model properties as  <strong>this.model.<i>propname</i></strong> or <strong>this.m.<i>propname</i></strong><p>
+<p>The event tags must be prefixed with b: (or data-) so that BINDster has the opportunity to refresh the DOM after the event is processed. See the <strong>b:onclick</strong> events on line 34 and line 39.</p>
+<b:code name="tutorial_simple_iteration_events" start="27" end="40"></b:code>
+<p>You must also tell BINDster about your controller:</p>
+<b:code name="tutorial_simple_iteration_events" start="41" end="43"></b:code>
+<p>We also opted to specify the view.  If you don't specify the DOM element id for the view it defaults to the entire document body.
+<p>And the results look like this</P>
+<b:example name="tutorial_simple_iteration_events" height="240"></b:example>
+<b:source name="tutorial_simple_iteration_events"></b:source>
