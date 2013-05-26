@@ -28,7 +28,7 @@ Fixes:
 
 - binding to booleans in selects handled correctly now
 
-V0.5
+V0.5 - Initial Release
 
  
 

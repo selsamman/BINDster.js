@@ -16,7 +16,7 @@ The key features include:
 
 Binding, conditional constructs and iteration are declared directly in the HTML using BINDster-specific attributes in a custom name space so the binding is always clear. If you prefer not to adorn your HTML with BINDster-specific attributes all functions may be applied in Javascript using selectors.
 
-See the [BINDster web site](http://bindster.com "http://bindster.com") for tutorials and documentation.  
+See the [BINDster web site](http://bindster.com "http://bindster.com") for tutorials and documentation.
 
 Here is a quick example:
 
