@@ -16,38 +16,39 @@ The key features include:
 
 Binding, conditional constructs and iteration are declared directly in the HTML using BINDster-specific attributes in a custom name space so the binding is always clear. If you prefer not to adorn your HTML with BINDster-specific attributes all functions may be applied in Javascript using selectors.
 
-See [BINDster.com][website] for tutorials and documentation.  Here is a quick example
-[website]: http://bindster.com
+See the [BINDster web site](http://bindster.com "http://bindster.com") for tutorials and documentation.  
 
-```javascript
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
-	<head>
-		<title>Bindster Simple Iteration</title>
-		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
-		<script type="text/javascript" src="../../js/bindster.js"></script>
-		<script type="text/javascript">
-			var model = {
-				addresses: [
-					{name: "Barack Obama", email:"prez@whitehouse.gov"},
-					{name: "George Bush", email:"gb@alumni.whitehouse.gov"}
-				]
-			}
-		</script>
-	</head>
-	<body>
-		<table>
-			<tbody>
-				<b:iterate on="addresses" index="ax">
-					<tr>
-						<td><input b:bind="addresses[ax].name" /></td>
-						<td><input b:bind="addresses[ax].email" /></td>
-					</tr>
-				</b:iterate>
-			</tbody>
-		</table>
-		<script type="text/javascript">
-			var bindster = new Bindster(model);
-		</script>
-	</body>
-</html>
-```
+Here is a quick example:
+
+
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://bindster.com/bindster.dtd"  xml:lang="en" lang="en">
+    	<head>
+    		<title>Bindster Simple Iteration</title>
+    		<link type="text/css" rel="stylesheet" href="site.css" media="all" />
+    		<script type="text/javascript" src="../../js/bindster.js"></script>
+    		<script type="text/javascript">
+    			var model = {
+    				addresses: [
+    					{name: "Barack Obama", email:"prez@whitehouse.gov"},
+    					{name: "George Bush", email:"gb@alumni.whitehouse.gov"}
+    				]
+    			}
+    		</script>
+    	</head>
+    	<body>
+    		<table>
+    			<tbody>
+    				<b:iterate on="addresses" index="ax">
+    					<tr>
+    						<td><input b:bind="addresses[ax].name" /></td>
+    						<td><input b:bind="addresses[ax].email" /></td>
+    					</tr>
+    				</b:iterate>
+    			</tbody>
+    		</table>
+    		<script type="text/javascript">
+    			var bindster = new Bindster(model);
+    		</script>
+    	</body>
+    </html>
+

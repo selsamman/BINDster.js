@@ -3,7 +3,6 @@ body {
 	margin: 0px 0px 0px 0px;
 	color: #5c5e5c;
 	font-size: 15px;
-	background: url(images/header_middle_bg.gif) 0px 0px repeat;
 	overflow-y: scroll;
 }
 h1 {
@@ -24,10 +23,8 @@ li {
 }
 
 .header {
-	background: url(images/header_middle_bg.gif) 0px 0px repeat-x;
 }
 .header .top {
-	background: url(images/header_middle.gif) top right no-repeat;
 	height: 88px;
 	width: 880px;
 	padding-left: 80px;
@@ -82,11 +79,7 @@ li {
 	width: 958px;
 	margin-left: auto;
 	margin-right: auto;
-	border-right: 1px solid #dabd89; 
-	border-left: 1px solid #dabd89; 
-	border-bottom: 1px solid #dabd89; 
 	padding: 0px;
-	background-color: #dabd89;
 
 }
 .body .left {
