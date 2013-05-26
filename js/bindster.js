@@ -21,8 +21,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* Release history
 *
-*  2-5-2012 - 1.0: First release
-*  5-26-2013 - 1.1: Bug Fixes and Features 
+*  2-5-2012 - 0.4: First release
+*  5-26-2013 - 0.5: Bug Fixes and Features
 *
 */
 function Bindster(model, view, controller, namespace, defer)
