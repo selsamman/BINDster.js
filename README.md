@@ -1,4 +1,4 @@
-BINDster is an alternative to using HTML templates to create dynamic web applications. BINDster creates a real-time bi-directional link between the DOM and your Javascript object. By using iteration and conditional constructs all of the flexibility of templating is preserved. Because the linkage is bi-directional there is no nead for events to capture changes to form elements.
+BINDster is an alternative to using HTML templates to create dynamic web applications. BINDster creates a real-time bi-directional link between the DOM and your Javascript object. By using iteration and conditional constructs all of the flexibility of templating is preserved. Because the linkage is bi-directional there is no need for events to capture changes to form elements.
 
 The best way to think of BINDster is in the context of a model, view, controller. BINDster is the glue that "binds" the model to the view.
 
