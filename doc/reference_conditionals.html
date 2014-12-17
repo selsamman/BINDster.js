@@ -1,15 +1,15 @@
 <h1>Conditionals</h1>
-<p>Conditional expressions allow DOM elements to be appear and disappear based on the value of properties in the model.  Just like with binding, the behaviour is immediate when the properties in the model are changed by the controller.  There attributes which control the hiding and showing of elements:</p>
+<p>Conditional expressions allow DOM elements to be appear and disappear based on the value of properties in the model.  Just like with binding, the behaviour is immediate when the properties in the model are changed by the controller.  The attributes which control the hiding and showing of elements:</p>
 <ul>
-	<li><strong>b:test="js expression"</strong> - Defines an expression that is evaluated to determines whether the element should be hidden.
+	<li><strong>b:test="js expression"</strong> - Defines an expression that is evaluated to determine whether the element should be hidden.
 		It is usually used inside the convenience element <strong>&lt;b:if&gt;&lt;/b:if&gt;</strong> as in: 
 			<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>&lt;b:if test="balance &lt; 0" &gt;Please deposit some cash&lt;/b:if&gt;</strong>. 
 			<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(You don't need the b: namespace when BINDster attributes are used within BINDSter tags)<br /><br />
 	</li>
-	<li><strong>b:hide="hide method"</strong>determines the mothod for hiding and showing elements.  These values are available:<br /><br />
+	<li><strong>b:hide="hide method"</strong>determines the method for hiding and showing elements.  These values are available:<br /><br />
 		<ul>
-			<li><strong>remove</strong> - Hide by removing the element's children and moving them into a document fragment and copying them back into the DOM when the elemetn is again shown. <strong>This is the default method for test.</strong></li>
-			<li><strong>display</strong> - Hide using <strong>display: none</strong> such that the element occupies no space.  The old display value is rememberd when the element is shown.</li>
+			<li><strong>remove</strong> - Hide by removing the element's children and moving them into a document fragment and copying them back into the DOM when the element is again shown. <strong>This is the default method for test.</strong></li>
+			<li><strong>display</strong> - Hide using <strong>display: none</strong> such that the element occupies no space.  The old display value is remembered when the element is shown.</li>
 			<li><strong>visibility</strong> - Hide using <strong>visibility: hidden</strong> such that the element occupies space but does not display. visiblity is set to visible when the element is shown.</li>
 			<li><strong>offscreen</strong> - Hide by positioning the element absolute with a top of -32767px such that the element is properly rendered but not actually viewable.  This is useful in some circumstances where you would want to use  <strong>display: none</strong> but where you need the HTML to be fully rendered so heights and widths are calculated correctly even while hidden.<br /><br /></li>
 		</ul>
