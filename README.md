@@ -1,3 +1,5 @@
+## Please note that this repository is no longer maintained and supersede by amorphic-bindster
+
 BINDster is an alternative to using HTML templates to create dynamic web applications. BINDster creates a real-time bi-directional link between the DOM and your Javascript object. By using iteration and conditional constructs all of the flexibility of templating is preserved. Because the linkage is bi-directional there is no need for events to capture changes to form elements.
 
 The best way to think of BINDster is in the context of a model, view, controller. BINDster is the glue that "binds" the model to the view.
@@ -17,6 +19,7 @@ The key features include:
 Binding, conditional constructs and iteration are declared directly in the HTML using BINDster-specific attributes in a custom name space so the binding is always clear. If you prefer not to adorn your HTML with BINDster-specific attributes all functions may be applied in Javascript using selectors.
 
 See the [BINDster web site](http://bindster.com "http://bindster.com") for tutorials and documentation.
+
 
 Here is a quick example:
 
