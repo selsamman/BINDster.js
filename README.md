@@ -12,7 +12,7 @@ The key features include:
 
 -  Conditional tests that insert or remove DOM elements based on the value in the model
 
--  Iteration which clones a DOM elements for every element of an an array
+-  Iteration which clones a DOM elements for every element of an array
 
 -   Flexible filtering and error handling insure that bad data never makes it's way into the model
 
